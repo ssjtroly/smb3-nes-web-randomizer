@@ -1,5 +1,5 @@
 function setPermanentPowerup(ROM, powerup) {
-	jsps.applyObjectInline(patch.disablePowerupsPatch, ROM);
+	jsps.applyObjectInline(patch.disablePowerups, ROM);
 
 	if (powerup === 0 || powerup === 1 || powerup === 2 || powerup === 6) {
 		// small or big
@@ -34,13 +34,13 @@ function setPermanentPowerup(ROM, powerup) {
 		ROM[rom.playerSuitChangeOnTimeUpPointer] = powerup+1;
 	} else if (powerup === 256) {
 		// quasi p-wing
-		jsps.applyObjectInline(patch.infinitePSpeedPatch, ROM);
+		jsps.applyObjectInline(patch.infinitePSpeed, ROM);
 
 		ROM[rom.playerSuitChangeOnDeathPointer] = 3+1;
 		ROM[rom.playerSuitChangeOnMapPrepPointer] = 3;
 		ROM[rom.playerSuitChangeOnTimeUpPointer] = 3+1;
 	} else if (powerup === 257) {
-		jsps.applyObjectInline(patch.infinitePSpeedPatch, ROM);
+		jsps.applyObjectInline(patch.infinitePSpeed, ROM);
 
 		// quasi p-wing with tanooki suit
 		ROM[rom.playerSuitChangeOnDeathPointer] = 5+1;

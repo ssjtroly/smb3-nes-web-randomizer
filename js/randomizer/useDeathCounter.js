@@ -1,6 +1,6 @@
 function setUseDeathCounter(ROM) {
-	jsps.applyObjectInline(patch.disable1UpsPatch, ROM);
-	jsps.applyObjectInline(patch.useDeathCounterPatch, ROM);
+	jsps.applyObjectInline(patch.disable1Ups, ROM);
+	jsps.applyObjectInline(patch.useDeathCounter, ROM);
 
 	ROM[rom.startingLivesPointer] = 0;
 	ROM[rom.continueLivesPointer] = 0;
