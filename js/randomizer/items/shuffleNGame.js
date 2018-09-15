@@ -1,0 +1,3 @@
+function shuffleNGame(ROM) {
+	
+}

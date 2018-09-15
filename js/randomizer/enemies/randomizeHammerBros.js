@@ -1,0 +1,3 @@
+function randomizeHammerBros(ROM) {
+	
+}

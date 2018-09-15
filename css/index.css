@@ -1,0 +1,237 @@
+body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+input[type=text] {
+    width: 100%;
+}
+
+.unimplemented {
+    display: inline;
+}
+
+#header-image-cell {
+    vertical-align: center;
+}
+
+#header-canvas {
+    width: 96px;
+    height: 96px;
+    image-rendering: optimizeSpeed;             /* Older versions of FF          */
+    image-rendering: -moz-crisp-edges;          /* FF 6.0+                       */
+    image-rendering: -webkit-optimize-contrast; /* Safari                        */
+    image-rendering: -o-crisp-edges;            /* OS X & Windows Opera (12.02+) */
+    image-rendering: pixelated;                 /* Awesome future-browsers       */
+    -ms-interpolation-mode: nearest-neighbor;   /* IE                            */
+}
+
+#page-title {
+    display: inline;
+}
+
+.rom-hash-table {
+    width: 100%;
+}
+
+.rom-hash-name {
+    text-align: center;
+}
+
+.rom-hash {
+    background-color: #E1E1E1;
+    word-break: break-all;
+}
+
+#todo-label, #changelog-label, #bugs-label {
+    display: inline;
+    font-size: 18px;
+}
+
+#todo-list, #changelog-list, #bugs-list {
+    display: none;
+    list-style-type: circle;
+    list-style-position: outside;
+    margin: 10px 0px 0px 0px;
+}
+
+.todo-list-item, .changelog-list-item {
+    display: list-item;
+}
+
+.general-toad-house-text-editor, 
+.whistle-toad-house-text-editor,
+.strange-toad-house-text-editor,
+.world-letter-text-editor,
+#world-letter-salutation-text-editor,
+#final-letter-salutation-text-editor,
+#mario-color, 
+#mario-complexion,
+#permanent-powerup,
+#starting-lives-input,
+#flags-input
+{
+    width: 100%;
+}
+
+#file-input {
+    display: none;
+}
+
+.option-text {
+    display: inline;
+}
+
+.tab-child-checkbox {
+    width: 100%;
+    display: inline;
+    padding: 2px 0px;
+}
+
+.worldLetterWorldLabel {
+    display: inline;
+    font-size: 12px;
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.tooltip-warning {
+    display: inline;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.tooltip .tooltip-text {
+    opacity:0;
+    transition: 0.5s;
+    transition-property: opacity;
+    transition-delay: 0.5s;
+
+    position: absolute;
+    z-index: 1;
+    visibility: hidden;
+    width: calc(95%-6px);
+    border-style: solid;
+    border-width: 1;
+    border-color: #ADADAD;
+    background-color: #E1E1E1;
+    color: #000000;
+    text-align: center;
+    border-radius: 6px;
+    padding: 0px 0px;
+    top: 30px;
+    left: 5%;
+}
+
+.tooltip:hover .tooltip-text {
+    opacity:1;
+
+    visibility: visible;
+    padding: 4px 8px;
+}
+
+/* Style the tab */
+.tab-container {
+    overflow: hidden;
+    width: 100%;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+}
+
+/* Style the buttons that are used to open the tab content */
+.tab-container button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 4px 16px;
+    transition: 0.25s;
+}
+
+/* Change background color of buttons on hover */
+.tab-container button:hover {
+    background-color: #E8E8E8;
+}
+
+/* Create an active/current tablink class */
+.tab-container button.active {
+    background-color: #D1D1D1;
+}
+
+.tab-content {
+    border-style: solid;
+    border-width: 1px;
+    border-color: #D1D1D1;
+    width: 100%;
+}
+
+.option-label {
+    cursor: pointer;
+}
+
+#generation-status {
+    color: #7F0000;
+}
+
+#spoiler-log-container {
+    display: none;
+}
+
+#spoiler-log {
+    width: 100%; 
+    min-height: 256px; 
+    height: 256px; 
+    resize: vertical;
+}
+
+#credits {
+    line-height: 32px;
+}
+
+/* noscript styles for when javascript is disabled or not present */
+#no-script {
+    position: fixed;
+    height: 100%; 
+    width: calc(100% - 64px); 
+    color: #FFFFFF;
+    top: 0px;
+    left: 0px;
+    background-color: #772222;
+    padding: 32px;
+    line-height:20px;
+}
+
+#no-script-body {
+    margin-left: 100px;
+}
+
+#no-script-image {
+    position: absolute;
+    top: 28px;
+    left: 32px;
+}
+
+#no-script-header {
+    width: 100%;
+    font-size: 24px;
+    font-weight: bold;
+    padding-right: 64px;
+}
+
+#no-script-reason {
+    font-size: 18px;
+}
+
+#no-script-info {
+    font-size: 14px;
+}
+
+.no-script-form {
+    padding: 8px;
+    display: inline;
+}

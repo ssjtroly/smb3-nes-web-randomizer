@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="description" content="This is a randomizer for Super Mario Bros. 3 on the Nintendo Entertainment System by ssjtroly.">
+	<meta name="keywords" content="Super Mario Bros 3, SMB3, NES, Nintendo, randomizer, random generator">
+	<meta name="author" content="ssjtroly">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<title>SMB3 Web Randomizer</title>
+
+	<!-- start css inclusion -->
+	<link rel='shortcut icon' type='image/x-icon' href='favicon.ico' />
+	<link rel="stylesheet" type="text/css" href="css/index.css" />
+	<!-- end css inclusion -->
+
+	<!-- start javascript inclusion -->
+	<script type="text/javascript" src="js/seedrandom.min.js"></script>
+	<script type="text/javascript" src="js/utility.js"></script>
+	<script type="text/javascript" src="js/types.js"></script>
+	<script type="text/javascript" src="js/jsps.js"></script>
+	<script type="text/javascript" src="js/patch.js"></script>
+	<script type="text/javascript" src="js/rom.js"></script>
+	<script type="text/javascript" src="js/ui.js"></script>
+	<script type="text/javascript" src="js/headerImage.js"></script>
+
+	<script type="text/javascript" src="js/randomizer/marioColor.js"></script>
+	<script type="text/javascript" src="js/randomizer/startingLives.js"></script>
+	<script type="text/javascript" src="js/randomizer/infiniteLives.js"></script>
+	<script type="text/javascript" src="js/randomizer/useDeathCounter.js"></script>
+	<script type="text/javascript" src="js/randomizer/permanentPowerup.js"></script>
+
+	<script type="text/javascript" src="js/randomizer/stages/shuffleRegularStages.js"></script>
+	<script type="text/javascript" src="js/randomizer/stages/addLostStages.js"></script>
+	<script type="text/javascript" src="js/randomizer/stages/shuffleFortresses.js"></script>
+	<script type="text/javascript" src="js/randomizer/stages/shuffleOverworldPipes.js"></script>
+	<script type="text/javascript" src="js/randomizer/stages/shuffleWorldOrder.js"></script>
+	<script type="text/javascript" src="js/randomizer/stages/removeSomeAutoscrollers.js"></script>
+	<script type="text/javascript" src="js/randomizer/stages/shuffleCastles.js"></script>
+	<script type="text/javascript" src="js/randomizer/stages/shuffleWorld8Ships.js"></script>
+	<script type="text/javascript" src="js/randomizer/stages/shuffleWarpZones.js"></script>
+
+	<script type="text/javascript" src="js/randomizer/enemies/randomizeEnemies.js"></script>
+	<script type="text/javascript" src="js/randomizer/enemies/randomizeHammerBros.js"></script>
+	<script type="text/javascript" src="js/randomizer/enemies/randomizeKoopaEarthquakes.js"></script>
+	<script type="text/javascript" src="js/randomizer/enemies/randomizeKoopaKidHP.js"></script>
+
+	<script type="text/javascript" src="js/randomizer/items/shuffleToadHouses.js"></script>
+	<script type="text/javascript" src="js/randomizer/items/shuffleNGame.js"></script>
+	<script type="text/javascript" src="js/randomizer/items/shuffleChestItems.js"></script>
+	<script type="text/javascript" src="js/randomizer/items/removeWarpWhistles.js"></script>
+	<script type="text/javascript" src="js/randomizer/items/randomizeNGamePrizes.js"></script>
+	<script type="text/javascript" src="js/randomizer/items/randomizeItemBlocks.js"></script>
+	<script type="text/javascript" src="js/randomizer/items/randomizeAnchorAbility.js"></script>
+	<script type="text/javascript" src="js/randomizer/items/letHammerBreakLocks.js"></script>
+
+	<script type="text/javascript" src="js/randomizer/misc/randomizeMusic.js"></script>
+	<script type="text/javascript" src="js/randomizer/misc/shuffleSfx.js"></script>
+	<script type="text/javascript" src="js/randomizer/misc/ohkoMode.js"></script>
+	<script type="text/javascript" src="js/randomizer/misc/alwaysRevertToSmall.js"></script>
+	<script type="text/javascript" src="js/randomizer/misc/infinitePSpeed.js"></script>
+
+	<script type="text/javascript" src="js/randomizer.js"></script>
+	<!-- end javascript inclusion -->
+
+	<!-- start initialization of javasript -->
+	<script type="text/javascript">
+		<!--
+		document.addEventListener("DOMContentLoaded", function() {
+			ui.initialize();
+
+			// set the image in header after ui is initialized (needs reference to canvas) 
+			headerImage.initialize();
+			// change the image after a certain interval
+			setInterval(function() {
+				headerImage.initialize();
+			}, 60000); // 1 minute
+		});
+		-->
+	</script>
+	<!-- end initialization of javasript -->
+
+</head>
+<body>
+<div id="javascript-enabled" hidden><!-- only using this to hide content when no javascript is present -->
+
+	<!-- start header table -->
+	<table>
+		<tr>
+			<td id="header-image-cell" rowspan="2">
+				<canvas id="header-canvas" width="32" height="32"></canvas>
+			</td>
+			<td>
+				<h1 id="page-title"><u>Super Mario Bros. 3 Web Randomizer</u></h1>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				This is a randomizer for Super Mario Bros. 3 on the <b><i>Nintendo Entertainment System</i></b> by 
+				<a href="https://github.com/ssjtroly">ssjtroly</a> in an attempt to recreate 
+				<a href="https://sites.google.com/site/smb3randomizer/">FCoughlin's SMB3 randomizer</a> 
+				in javascript.
+			</td>
+		</tr>
+	</table>
+	<!-- end header table -->
+
+	<br><hr><br>
+
+	<!-- start ROM checksum table -->
+	ROM Checksums:
+	<br>
+	<table class="rom-hash-table">
+	<tr><td colspan="2" class="rom-hash-name"><b>Super Mario Bros. 3 US (PRG1)</b><td></tr>
+	<tr>
+	<td><i>CRC32:</i></td><td class="rom-hash">0B742B33</td>
+	</tr><tr>
+	<td><i>MD5:</i></td><td class="rom-hash">86D1982FEA7342C0AF9679DDF3869D8D</td>
+	</tr><tr>
+	<td><i>SHA256:</i></td><td class="rom-hash">4377A7F5E6EB50BDD2AC6F249BF1A7085500ACA8EB41F38545C3A2731C51A579</td>
+	</tr>
+	</table>
+	<!-- end ROM checksum table -->
+
+	<br><hr><br>
+
+	<!-- start logs -->
+	<label class="option-label">
+		<input type="checkbox" id="show-changelog"> <div id="changelog-label"><b><i>Changelog</i></b></div><br>
+	</label>
+	<ul id="changelog-list"></ul><br>
+
+	<label class="option-label">
+		<input type="checkbox" id="show-todo"> <div id="todo-label"><b><i>TODO</i></b></div><br>
+	</label>
+	<ul id="todo-list"></ul><br>
+
+	<label class="option-label">
+		<input type="checkbox" id="show-bugs"> <div id="bugs-label"><b><i>Features</i></b></div><br>
+	</label>
+	<ul id="bugs-list"></ul>
+	<!-- end logs -->
+
+	<br><hr><br>
+
+	<!-- start seed input -->
+	Seed<br><input type="text" id="seed-input" /><br>
+	<input type="button" id="randomize-seed" value="Random"/><br>
+	<!-- end seed input -->
+
+	<br>
+
+	<!-- start mario color -->
+	<div class="">
+		<div class="option-text">Mario Color</div>
+	</div>
+	<div class=" tooltip">
+	<select id="mario-color">
+		<option value="-1">Default</option>
+		<option value="22">Red</option>
+		<option value="49">Pale Blue</option>
+		<option value="25">Green</option>
+		<option value="36">Pink</option>
+		<option value="60">Sky Blue</option>
+		<option value="48">White</option>
+		<option value="61">Light Grey</option>
+		<option value="2">Mignight Blue</option>
+		<option value="10">Dungeon Green</option>
+		<option value="4">Plum</option>
+		<option value="256">Random</option>
+	</select>
+	<span class="tooltip-text">The color for Mario's sprite (Luigi will always be random if Mario is not default)</span>
+	</div>
+	<div class="">
+		<div class="option-text">Mario Complexion</div>
+	</div>
+	<div class=" tooltip">
+	<select id="mario-complexion">
+		<option value="-1">Default</option>
+		<option value="55">Light</option>
+		<option value="38">Light-Medium</option>
+		<option value="24">Dark-Medium</option>
+		<option value="8">Dark</option>
+		<option value="58">Sickly</option>
+		<option value="49">Asphyxiated</option>
+		<option value="32">Ghost</option>
+		<option value="42">Alien</option>
+		<option value="256">Random</option>
+	</select>
+	<span class="tooltip-text">The skin color for Mario's sprite (Luigi will always be random if Mario is not default)</span>
+	</div><br>
+	<!-- end mario color -->
+
+	<br>
+
+	<!-- start life options -->
+	<div class="option-text">Starting Lives</div><br>
+	<div class=" tooltip">
+	<input id="starting-lives-input" type="number" min="0" max="99" step="1" value="4" />
+	<span class="tooltip-text">The number of lives a player starts with and has after a continue</span>
+	</div>
+	<label class="option-label">
+		<div class=" tooltip">
+		<input id="infinite-lives" type="checkbox" />Infinite Lives
+		<span class="tooltip-text">Gives infinite lives so you never have to worry about losing any progress to a game over</span>
+		</div>
+	</label>
+	<label class="option-label">
+		<div class=" tooltip">
+		<input id="use-death-counter" type="checkbox" />Use Death Counter
+		<span class="tooltip-text">The life counter is used to count the number of deaths (Note: Only available with infinite lives)</span>
+		</div>
+	</label>
+	<br>
+	<!-- end life options -->
+
+	<br>
+
+	<!-- start powerup options -->
+	<div class="">
+		<div class="option-text">Permanent Powerup</div>
+	</div>
+	<div class="tooltip">
+	<select id="permanent-powerup">
+		<option value="-1">None</option>
+		<option value="0">Small</option>
+		<option value="1">Big</option>
+		<option value="2">Fire</option>
+		<option value="3">Racoon</option>
+		<option value="4">Frog</option>
+		<option value="5">Tanooki</option>
+		<option value="6">Hammer</option>
+		<option value="256">Quasi-P-Wing</option>
+		<option value="257">Quasi-P-Wing Tanooki</option>
+	</select>
+	<span class="tooltip-text"><div class="tooltip-warning">WARNING: FORCES OHKO MODE!</div><br>
+		Mario will always have this powerup and all other powerups only give points<br>
+		Also makes slight changes to some levels to make sure they are completable with selected powerup</span>
+	</div><br>
+	<!-- end powerup options -->
+
+	<br>
+
+	<!-- start flags input -->
+	<div class="tooltip">
+		<div class="option-text">Flags</div><br>
+	</div>
+	<div class="tooltip">
+		<input id="flags-input" type="text"/>
+		<span class="tooltip-text">This is a base64 encoded bitmask representing enabled checkbox options (Incompatible with fcoughlin's flags)</span>
+	</div><br>
+	<!-- end flags input -->
+
+	<br>
+	<div hidden><!-- start hiding text editors (NOT IMPLEMENTED) -->
+	<hr><br>
+
+	<!-- start text editors -->
+	<label class="option-label">
+		<input type="checkbox" id="customize-title-screen" unchecked disabled /> 
+		Customize Title Screen<br>
+	</label>
+
+	<div id="custom-title-screen-container" hidden>
+		<br>
+	</div>
+
+	<br>
+
+	<label class="option-label">
+		<input type="checkbox" id="customize-text" unchecked />
+		Customize Text<br>
+	</label>
+
+	<div id="custom-text-container" hidden>
+		<br>
+
+		<b><i>'~' appears to be a special character used in some default text. It seems to cause a space character, but the difference to an actual space is unknown to me.</i></b><br>
+		
+		<br>
+
+		General Toad House Text:<br>
+		<input type="text" class="general-toad-house-text-editor" /><br>
+		<input type="text" class="general-toad-house-text-editor" /><br>
+		<input type="text" class="general-toad-house-text-editor" /><br>
+		<input type="text" class="general-toad-house-text-editor" /><br>
+		<input type="text" class="general-toad-house-text-editor" /><br>
+		<input type="text" class="general-toad-house-text-editor" /><br>
+		<input type="button" id="general-toad-house-text-default" value="Default" />
+		<input type="button" id="general-toad-house-text-submit" value="Submit" title="Submit this text to be reviewed for the randomized text pool." disabled/><br>
+		<br>
+		Whistle Toad House Text:<br>
+		<input type="text" class="whistle-toad-house-text-editor" /><br>
+		<input type="text" class="whistle-toad-house-text-editor" /><br>
+		<input type="text" class="whistle-toad-house-text-editor" /><br>
+		<input type="text" class="whistle-toad-house-text-editor" /><br>
+		<input type="text" class="whistle-toad-house-text-editor" /><br>
+		<input type="text" class="whistle-toad-house-text-editor" /><br>
+		<input type="button" id="whistle-toad-house-text-default" value="Default" />
+		<input type="button" id="whistle-toad-house-text-submit" value="Submit" title="Submit this text to be reviewed for the randomized text pool." disabled/><br>
+		<br>
+		Strange Toad House Text:<br>
+		<input type="text" class="strange-toad-house-text-editor" /><br>
+		<input type="text" class="strange-toad-house-text-editor" /><br>
+		<input type="text" class="strange-toad-house-text-editor" /><br>
+		<input type="text" class="strange-toad-house-text-editor" /><br>
+		<input type="text" class="strange-toad-house-text-editor" /><br>
+		<input type="text" class="strange-toad-house-text-editor" /><br>
+		<input type="button" id="strange-toad-house-text-default" value="Default" />
+		<input type="button" id="general-toad-house-text-submit" value="Submit" title="Submit this text to be reviewed for the randomized text pool." disabled/><br>
+		<br>
+		<b><i>'|' is used as a new line character.<br>
+		The text should be <= 8 lines with a maximum of 20 characters per line for the first 6 and 16 characters per line on the last 2.</i></b><br>
+		<br>
+		World Letters Text:
+		<br>
+		<div class="worldLetterWorldLabel">World 2</div><br>
+		<input type="text" class="world-letter-text-editor" id="world-2-letter-text-editor" /><br>
+		<input type="button" class="world-letter-text-default" value="Default" />
+		<input type="button" id="world-2-letter-text-submit" value="Submit" title="Submit this text to be reviewed for the randomized text pool." disabled/><br>
+		<div class="worldLetterWorldLabel">World 3</div><br>
+		<input type="text" class="world-letter-text-editor" id="world-3-letter-text-editor" /><br>
+		<input type="button" class="world-letter-text-default" value="Default" />
+		<input type="button" id="world-3-letter-text-submit" value="Submit" title="Submit this text to be reviewed for the randomized text pool." disabled/><br>
+		<div class="worldLetterWorldLabel">World 4</div><br>
+		<input type="text" class="world-letter-text-editor" id="world-4-letter-text-editor" /><br>
+		<input type="button" class="world-letter-text-default" value="Default" />
+		<input type="button" id="world-4-letter-text-submit" value="Submit" title="Submit this text to be reviewed for the randomized text pool." disabled/><br>
+		<div class="worldLetterWorldLabel">World 5</div><br>
+		<input type="text" class="world-letter-text-editor" id="world-5-letter-text-editor" /><br>
+		<input type="button" class="world-letter-text-default" value="Default" />
+		<input type="button" id="world-5-letter-text-submit" value="Submit" title="Submit this text to be reviewed for the randomized text pool." disabled/><br>
+		<div class="worldLetterWorldLabel">World 6</div><br>
+		<input type="text" class="world-letter-text-editor" id="world-6-letter-text-editor" /><br>
+		<input type="button" class="world-letter-text-default" value="Default" />
+		<input type="button" id="world-6-letter-text-submit" value="Submit" title="Submit this text to be reviewed for the randomized text pool." disabled/><br>
+		<div class="worldLetterWorldLabel">World 7</div><br>
+		<input type="text" class="world-letter-text-editor" id="world-7-letter-text-editor" /><br>
+		<input type="button" class="world-letter-text-default" value="Default" />
+		<input type="button" id="world-7-letter-text-submit" value="Submit" title="Submit this text to be reviewed for the randomized text pool." disabled/><br>
+		<br>
+		Final Letter:<br>
+		<br>
+		<input type="text" id="final-letter-text-editor" /><br>
+		<input type="button" id="final-letter-text-default" value="Default" />
+		<input type="button" id="final-letter-text-submit" value="Submit" title="Submit this text to be reviewed for the randomized text pool." disabled/><br>
+	</div>
+	<!-- end text editors -->
+
+	<br>
+	</div><!-- end hiding text editors (NOT IMPLEMENTED) -->
+	<hr><br>
+	
+	<!-- start tabbed option list -->
+	<div class="tab-container">
+		<button class="tab">Stages</button>
+		<button class="tab">Enemies</button>
+		<button class="tab">Items</button>
+		<button class="tab">Miscellaneous</button>
+	</div>
+	<!-- end tabbed option list -->
+
+	<!-- start stages tab -->
+	<div class="tab-content" id="stages-tab" hidden>
+
+		<label class="option-label">
+			<div class="tooltip tab-child-checkbox">
+				<input class="flaggable" id="shuffle-regular-stages" type="checkbox" unchecked/>
+				<div class="option-text">Shuffle Regular Stages</div>
+				<span class="tooltip-text">Regular stages (numbered stages, desert) in worlds 1-8 will be shuffled</span>
+			</div>
+		</label>
+
+		<label class="option-label">
+			<div class="unimplemented tooltip tab-child-checkbox">
+				<input class="flaggable" id="add-lost-stages" type="checkbox" unchecked/>
+				<div class="option-text">Add Lost Stages</div>
+				<span class="tooltip-text">Eight "lost stages" will be shuffled in (possibly replacing 8 other stages from the game)</span>
+			</div>
+		</label>
+
+		<label class="option-label">
+			<div class="unimplemented tooltip tab-child-checkbox">
+				<input class="flaggable" id="shuffle-fortresses" type="checkbox" unchecked/>
+				<div class="option-text">Shuffle Fortresses</div>
+				<span class="tooltip-text">Fortress stages in worlds 1-8 will be shuffled</span>
+			</div>
+		</label>
+
+		<label class="option-label">
+			<div class="unimplemented tooltip tab-child-checkbox">
+				<input class="flaggable" id="shuffle-world-8-ships" type="checkbox" unchecked/>
+				<div class="option-text">Shuffle World 8 Ships</div>
+				<span class="tooltip-text">The world 8 ships (boat, air force, super tank) will be shuffled with the fortresses</span>
+			</div>
+		</label>
+
+		<label class="option-label">
+			<div class="unimplemented tooltip tab-child-checkbox">
+				<input class="flaggable" id="shuffle-castles" type="checkbox" unchecked/>
+				<div class="option-text">Shuffle Castles</div>
+				<span class="tooltip-text">Castle/airship stages will be shuffled</span>
+			</div>
+		</label>
+
+		<label class="option-label">
+			<div class="unimplemented tooltip tab-child-checkbox">
+				<input class="flaggable" id="random-hammer-bros-levels" type="checkbox" unchecked/>
+				<div class="option-text">Random Hammer Bros Levels</div>
+				<span class="tooltip-text">The Hammer Bros level terrain will be randomized to be from any world.</span>
+			</div>
+		</label>
+
+		<label class="option-label">
+			<div class="tooltip tab-child-checkbox">
+				<input class="flaggable" id="remove-some-autoscrollers" type="checkbox" unchecked/>
+				<div class="option-text">Remove Some Autoscrollers</div>
+				<span class="tooltip-text">Autoscroller status will be removed from 1-4, 3-6, 5-6, 6-2, 6-7, 7-4, & world 8 tank/ship/boat</span>
+			</div>
+		</label>
+
+		<label class="option-label">
+			<div class="unimplemented tooltip tab-child-checkbox">
+				<input class="flaggable" id="remove-some-autoscrollers" type="checkbox" unchecked/>
+				<div class="option-text">Remove Bonus Autoscrollers</div>
+				<span class="tooltip-text">Autoscroller status will be removed from bonus stages and coin ships</span>
+			</div>
+		</label>
+
+		<label class="option-label">
+			<div class="unimplemented tooltip tab-child-checkbox">
+				<input class="flaggable" id="remove-ship-autoscrollers" type="checkbox" unchecked/>
+				<div class="option-text">Remove Ship Autoscrollers</div>
+				<span class="tooltip-text">Autoscrollers are removed from Koopa ships (Note: this disables the ability for the ships to fly away if you die)</span>
+			</div>
+		</label>
+
+		<label class="option-label">
+			<div class="unimplemented tooltip tab-child-checkbox">
+				<input class="flaggable" id="shuffle-overworld-pipes" type="checkbox" unchecked/>
+				<div class="option-text">Shuffle Overworld Pipes</div>
+				<span class="tooltip-text">Pipes on the overworld will be swapped on where you end up (Goodluck in world 7 & 8)</span>
+			</div>
+		</label>
+
+		<label class="option-label">
+			<div class="unimplemented tooltip tab-child-checkbox">
+				<input class="flaggable" id="shuffle-world-order" type="checkbox" unchecked/>
+				<div class="option-text">Shuffle World Order</div>
+				<span class="tooltip-text">The worlds may come up in a different order (Note: world 8 will always be last)</span>
+			</div>
+		</label>
+
+		<label class="option-label">
+			<div class="unimplemented tooltip tab-child-checkbox">
+				<input class="flaggable" id="shuffle-warp-zones" type="checkbox" unchecked/>
+				<div class="option-text">Shuffle Warp Zones</div>
+				<span class="tooltip-text">The pipes in the warp zones will take you to difference worlds (Note: numbers do not reflect where they take you)</span>
+			</div>
+		</label>
+
+	</div>
+	<!-- end stages tab -->
+
+	<!-- start enemies tab -->
+	<div class="tab-content" id="enemies-tab" hidden>
+
+		<label class="option-label">
+			<div class="tooltip tab-child-checkbox">
+				<input class="flaggable" id="randomize-enemies" type="checkbox" unchecked/>
+				<div class="option-text">Randomize Enemies</div>
+				<span class="tooltip-text">Enemies in stages will be randomized (Note: may not change all enemies)</span>
+			</div>
+		</label>
+
+		<label class="option-label">
+			<div class="unimplemented tooltip tab-child-checkbox">
+				<input class="flaggable" id="randomize-koopa-earthquakes" type="checkbox" unchecked/>
+				<div class="option-text">Randomize Koopa Earthquakes</div>
+				<span class="tooltip-text">Two random Koopa Kid jumps will cause earthquakes (normally Roy/Ludwig)</span>
+			</div>
+		</label>
+
+		<label class="option-label">
+			<div class="tooltip tab-child-checkbox">
+				<input class="flaggable" id="randomize-koopa-kid-HP" type="checkbox" unchecked/>
+				<div class="option-text">Randomize Koopa Kid HP</div>
+				<span class="tooltip-text">The number of stomps to kill a Koopa Kid will be between 1 and 5 (Note: This could be different for each Koopa Kid)</span>
+			</div>
+		</label>
+
+		<label class="option-label">
+			<div class="unimplemented tooltip tab-child-checkbox">
+				<input class="flaggable" id="randomize-hammer-bros" type="checkbox" unchecked/>
+				<div class="option-text">Randomize Hammer Bros</div>
+				<span class="tooltip-text">The Hammer Bros will be randomized on the world map, (E.g. you may walk into a fight and find a Sumo Bro that was originally a Hammer Bro)</span>
+			</div>
+		</label>
+
+	</div>
+	<!-- end enemies tab -->
+
+	<!-- start items tab -->
+	<div class="tab-content" id="items-tab" hidden>
+
+		<label class="option-label">
+			<div class="unimplemented tooltip tab-child-checkbox">
+				<input class="flaggable" id="shuffle-n-game" type="checkbox" unchecked/>
+				<div class="option-text">Shuffle <i>N</i> Game</div>
+				<span class="tooltip-text">The cards in the <i>N</i> game will be shuffled resulting in known patterns possibly being wrong</span>
+			</div>
+		</label>
+
+		<label class="option-label">
+			<div class="unimplemented tooltip tab-child-checkbox">
+				<input class="flaggable" id="randomize-n-game-prizes" type="checkbox" unchecked/>
+				<div class="option-text">Randomize <i>N</i> Game Prizes</div>
+				<span class="tooltip-text">The prizes you get from the <i>N</i> game will be shuffled (Note: that this does not necessarily match the items you receive)</span>
+			</div>
+		</label>
+
+		<label class="option-label">
+			<div class="unimplemented tooltip tab-child-checkbox">
+				<input class="flaggable" id="randomize-castle-items" type="checkbox" unchecked/>
+				<div class="option-text">Randomize Castle Items</div>
+				<span class="tooltip-text">The items given to you be Peach will be randomized</span>
+			</div>
+		</label>
+
+		<label class="option-label">
+			<div class="unimplemented tooltip tab-child-checkbox">
+				<input class="flaggable" id="randomize-anchor-ability" type="checkbox" unchecked/>
+				<div class="option-text">Randomize Anchor Ability</div>
+				<span class="tooltip-text">The function of anchors will be changed to that of a random item (Note: all anchors in a seed will have the same function)</span>
+			</div>
+		</label>
+
+		<label class="option-label">
+			<div class="unimplemented tooltip tab-child-checkbox">
+				<input class="flaggable" id="randomize-item-blocks" type="checkbox" unchecked/>
+				<div class="option-text">Randomize Item Blocks</div>
+				<span class="tooltip-text">The contents of power-up blocks will be randomized</span>
+			</div>
+		</label>
+
+
+		<label class="option-label">
+			<div class="unimplemented tooltip tab-child-checkbox">
+				<input class="flaggable" id="remove-warp-whistles" type="checkbox" unchecked/>
+				<div class="option-text">Remove Warp Whistles</div>
+				<span class="tooltip-text">Warp whistles will be removed from the game and replaced with random items</span>
+			</div>
+		</label>
+
+		<label class="option-label">
+			<div class="unimplemented tooltip tab-child-checkbox">
+				<input class="flaggable" id="shuffle-chest-items" type="checkbox" unchecked/>
+				<div class="option-text">Shuffle Chest Items</div>
+				<span class="tooltip-text">The items found in chests in stages (Hammer Bros, 3-7, 5-1, plants, world 8 tank 1) will be shuffled</span>
+			</div>
+		</label>
+
+		<label class="option-label">
+			<div class="unimplemented tooltip tab-child-checkbox">
+				<input class="flaggable" id="shuffle-toad-houses" type="checkbox" unchecked/>
+				<div class="option-text">Shuffle Toad Houses</div>
+				<span class="tooltip-text">The Toad item houses will be shuffled resulting in different items being available</span>
+			</div>
+		</label>
+
+		<label class="option-label">
+			<div class="tooltip tab-child-checkbox">
+				<input class="flaggable" id="let-hammer-break-locks" type="checkbox" unchecked/>
+				<div class="option-text">Let Hammer Break Locks</div>
+				<span class="tooltip-text">The hammer can be used to break fortress locks on the overworld</span>
+			</div>
+		</label>
+
+	</div>
+	<!-- end items tab -->
+
+	<!-- start misc tab -->
+	<div class="tab-content" id="misc-tab" hidden>
+
+		<label class="option-label">
+			<div class="tooltip tab-child-checkbox">
+				<input class="flaggable" id="randomize-music" type="checkbox" unchecked/>
+				<div class="option-text">Randomize Music</div>
+				<span class="tooltip-text">Stage music will be randomized</span>
+			</div>
+		</label>
+
+		<label class="option-label">
+			<div class="tooltip tab-child-checkbox">
+				<input class="flaggable" id="shuffle-sfx" type="checkbox" unchecked/>
+				<div class="option-text">Shuffle Sound Effects</div>
+				<span class="tooltip-text">Sound effects will be shuffled with other sound effects in it's group (e.g. player effects are in one group, gaining a powerup and gaining a coin are in another group)</span>
+			</div>
+		</label>
+
+		<label class="option-label">
+			<div class="tooltip tab-child-checkbox">
+				<input class="flaggable" id="ohko-mode" type="checkbox" unchecked/>
+				<div class="option-text">OHKO Mode</div>
+				<span class="tooltip-text">Taking damage immediately kills you regardless of any powerup you may have</span>
+			</div>
+		</label>
+
+		<label class="option-label">
+			<div class="tooltip tab-child-checkbox">
+				<input class="flaggable" id="infinite-p-speed" type="checkbox" unchecked/>
+				<div class="option-text">Infinite P-Speed</div>
+				<span class="tooltip-text">Player's power meter will always be full</span>
+			</div>
+		</label>
+
+		<label class="option-label">
+			<div class="tooltip tab-child-checkbox">
+				<input class="flaggable" id="always-revert-to-small" type="checkbox" unchecked/>
+				<div class="option-text">Always Revert To Small</div>
+				<span class="tooltip-text">Taking damage while having a powerup beyond a mushroom will always make you small instead of stepping down to big (Note: OHKO mode will override this option)</span>
+			</div>
+		</label>
+
+	</div>
+	<!-- end misc tab -->
+
+	<br><hr><br>
+
+	<!-- start rom input -->
+	ROM<br><input type="file" id="file-input" accept=".nes" />
+	<input type="text" id="file-input-filename" readonly/><br>
+	<input type="button" id="file-input-browse" value="Browse" /><br>
+	<!-- end rom input -->
+
+	<div hidden><!-- start hiding save/load config (NOT IMPLEMENTED) -->
+	<br>
+
+	<!-- start configuration save/load -->
+	<input id="load-config" type="button" value="Load Config" disabled/>
+	<input id="save-config" type="button" value="Save Config" disabled/><br>
+	<!-- end configuration save/load -->
+
+	</div><!-- end hiding save/load config (NOT IMPLEMENTED) -->
+
+	<br><hr><br>
+
+	<!-- start generation rom -->
+	<input type="button" id="generate-rom" value="Generate Random ROM" /><br>
+	<label class="option-label">
+		<input type="checkbox" id="generate-spoilers" value="Generate" checked/>Write Spoilers
+	</label><br>
+	<br>
+	Last Generated: <label id="last-generated"><i>[none]</i></label><br>
+	<label id="generation-status"><i>Need input ROM file</i></label>
+	<br>
+	<!-- end generation rom -->
+
+	<br>
+
+	<!-- start save generated -->
+	<input type="button" id="save-rom" value="Save" disabled/>
+	<!-- end save generated -->
+
+	<br>
+
+	<br><hr><br>
+
+	<!-- start spoilers -->
+	<label class="option-label">
+		<input type="checkbox" id="show-spoiler-log" unchecked/> Spoiler Log<br>
+	</label>
+	<div id="spoiler-log-container" hidden><br>
+		<textarea id="spoiler-log" readonly></textarea>
+	</div>
+	<!-- end spoilers -->
+
+	<br>
+
+	<!-- start save spoilers -->
+	<input type="button" id="save-spoiler-log" value="Save" disabled /><br>
+	<!-- end save spoilers -->
+
+	<br><hr><br>
+
+	<!-- start credits section -->
+	<div id="credits">
+		Credit goes to <a href="https://www.twitch.tv/fcoughlin">FCoughlin</a> for the Randomize Koopa Kid HP option.<br>
+		Thanks to <a href="https://github.com/captainsouthbird">Captain Southbird</a> for the <a href="https://github.com/captainsouthbird/smb3">disassembly</a> of Super Mario Bros 3.<br>
+		Thanks to <a href="http://hukka.ncn.fi/">Hukka</a> for <a href="https://www.romhacking.net/utilities/298/">SMB3 Workshop</a>.<br>
+		And thanks to Spinzig for the enemy compatibility chart in the SMB3 Workshop docs.
+	</div>
+	<!-- start credits section -->
+
+</div><!-- only using this to hide content when no javascript is present -->
+</body>
+</html>
+
+<!-- start warning message for disabled javascript -->
+<noscript>
+	<div id="no-script">
+		<div id="no-script-body">
+			<div id="no-script-image">
+			<img width="80px" src="data:image/png;base64,
+			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
+			"/></div>
+			<div id="no-script-header">
+			Reported Pimp Site!</div>
+			<hr><br>
+	    	<div id="no-script-reason">
+	    	The website at this address has been reported to use Javascript for everything and has been blocked based on your lack of scripting preferences.</div>
+	    	<br><hr><br>
+	    	<div id="no-script-info">
+	    	Pimp sites try to run programs that do balla things with information, use your computer to impress others or damage your system of monotony.<br>
+	    	<br>
+	    	Some pimp sites intentionally distribute Javascript software, but many are comprised of Javascript without the knowledge or awareness of their users. 
+	    	</div><br>
+	    	<form class="no-script-form" action="https://www.google.com/search">
+	    		<input type="hidden" name="q" value="super mario 3 randomizer" />
+	    		<input type="submit" value="Get me out of here!" />
+	   		</form>
+	   		<form class="no-script-form" action="https://www.whatismybrowser.com/detect/is-javascript-enabled">
+	    		<input type="submit" value="Why was this site too good for me?" />
+	   		</form>
+	   	</div>
+    </div>
+</noscript>
+<!-- end warning message for disabled javascript -->

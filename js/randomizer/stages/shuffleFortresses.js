@@ -1,0 +1,3 @@
+function shuffleFortresses(ROM) {
+	
+}

@@ -1,0 +1,3 @@
+function randomizeAnchorAbility(ROM) {
+	
+}
