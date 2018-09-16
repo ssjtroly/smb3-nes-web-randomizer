@@ -409,72 +409,66 @@ var patch = {
 	},
 
 	allowHammerToBreakLocks: {
-		// found in PRG026.asm, added to end of ROM bank at offset $35530
-		// this adds 0x3C bytes, 0xAA4 bytes remaining in this bank 
+		// found in PRG026.asm, in empty space at end of bank
+		// using 54 bytes, 2730 remaining free bytes starting at $35566
 		"35530": [
-			// ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-			// ; Hack to allow hammers to break fortress locks
-			// ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-			// PRG026_GetMapOffset: ; load map tile into register A
+			// RockBreak_GetMapTileNearPlayer:
 			"a4", "0", // LDY <Temp_Var1	 		; Y = LDY <Temp_Var1
 			"20", "69", "d3", // JSR MapTile_Get_By_Offset	; Get map tile nearby player (on page 10)
 			"60", // RTS
 
-			// PRG026_AllowHammerToBreakLocks:
-			//; original functionality, only check rocks
-			"20", "20", "b5", // JSR PRG026_GetMapOffset ; set A with map tile
+			// RockBreak_IncLocks:
+			// ; Rock tiles
+			"20", "20", "b5", // JSR RockBreak_GetMapTileNearPlayer
 			"38", "e9", "51", // SUB #TILE_ROCKBREAKH	 ; Offset to rock tiles
-			"c9", "2", // CMP #$02	 ; See if value is less than 2 (rock to break)
-			"90", "1f", // BLT PRG026_HammerCanBreakRock	 ; If rock, jump to PRG026_A6D2
+			"c9", "2", // CMP #$02
+			"90", "1f", // BLT RockBreak_Rock
 
-			//; added functionality, check locks
-			//; Lock variables - TILE_LOCKVERT, TILE_ALTLOCK, TILE_LOCKHORZ
+			// ; Lock tiles
+			"20", "20", "b5", // JSR RockBreak_GetMapTileNearPlayer
+			"38", "e9", "54", // SUB #TILE_LOCKVERT ; offset to vertical lock
+			"c9", "0", // CMP #$00 ; is 0 when map tile is this lock
+			"f0", "16", // BEQ RockBreak_LockVert ; need to test lock directly because they are scattered around
 
-			"20", "20", "b5", // JSR PRG026_GetMapOffset ; reload map tile since 'SUB #TILE_ROCKBREAKH' changes it
-			"38", "e9", "54", // SUB #TILE_LOCKVERT ; Offset to vertical lock
-			"c9", "0", // CMP #$00 ; tile lock values are not sequential like rocks
-			"f0", "18", // BEQ PRG026_HammerCanBreakLockVert ; SUB will result in 0 if this is a vertical lock
+			"20", "20", "b5", // JSR RockBreak_GetMapTileNearPlayer
+			"38", "e9", "56", // SUB #TILE_LOCKVERT
+			"c9", "0", // CMP #$00 
+			"f0", "f", // BEQ RockBreak_LockVert
 
-			"20", "20", "b5", // JSR PRG026_GetMapOffset ; reload map tile since 'SUB #TILE_LOCKVERT' changes it
-			"38", "e9", "e4", // SUB #TILE_ALTLOCK ; only found on world 5 (blue lock on cloud side)? only breaks horiztonally
-			"c9", "0", // CMP #$00 ; tile lock values are not sequential like rocks
-			"f0", "13", // BEQ PRG026_HammerCanBreakLockHorz ; SUB will result in 0 if this is a alternate lock
+			"20", "20", "b5", // JSR RockBreak_GetMapTileNearPlayer
+			"38", "e9", "e4", // SUB #TILE_ALTLOCK
+			"c9", "0", // CMP #$00
+			"f0", "5", // BEQ RockBreak_LockHorz
 
-			"20", "20", "b5", // JSR PRG026_GetMapOffset ; reload map tile since 'SUB #TILE_ALTLOCK' changes it
-			"38", "e9", "56", // SUB #TILE_LOCKHORZ ; Offset to horiztonal lock
-			"c9", "0", // CMP #$00 ; tile lock values are not sequential like rocks
-			"f0", "9", // BEQ PRG026_HammerCanBreakLockHorz ; SUB will result in 0 if this is a horiztonal lock
+			"60", // RTS
 
-			"60", // RTS ; return back to PRG026_A6BF to continue loop
+			// RockBreak_Rock:
+			"60", // RTS ; rock result will already be the correct path
 
-			// PRG026_HammerCanBreakRock:
-			//; 'SUB #TILE_ROCKBREAKH' will result in 0 or 1 depending on the rock
-			//; since TILE_ROCKBREAKH and TILE_ROCKBREAKV are sequential
-			"4c", "d2", "a6", // JMP PRG026_A6D2
+			// RockBreak_LockVert:
+			"a9", "1", // LDA #$01 ; 1 for a vertical path when lock is removed
+			"60", // RTS
 
-			// PRG026_HammerCanBreakLockVert:
-			"a9", "1", // LDA #$01 ; tells PRG026_A6D2 we need a vertical path
-			"4c", "d2", "a6", // JMP PRG026_A6D2
-
-			// PRG026_HammerCanBreakLockHorz:
-			"a9", "0", // LDA #$00 ; tells PRG026_A6D2 we need a horizatonal path
-			"4c", "d2", "a6" // JMP PRG026_A6D2
+			// RockBreak_LockHorz:
+			"a9", "0", // LDA #$00 ; 0 for a horizontal path when lock is removed
+			"60" // RTS
 		],
 
-		// entry point
 		// found in PRG026.asm, PRG026_A6BF
 		"346cf": [
-			// replace...
-			//		; Rock tiles:
+			// replaces...
+			// 		LDY <Temp_Var1	 		; Y = LDY <Temp_Var1
+			// 		JSR MapTile_Get_By_Offset	; Get map tile nearby player (on page 10)
+
+			// 		; Rock tiles:
 			// 		SUB #TILE_ROCKBREAKH	 ; Offset to rock tiles
 			// 		CMP #$02	 ; See if value is less than 2 (rock to break)
 			// 		BLT PRG026_A6D2	 ; If rock, jump to PRG026_A6D2
 			// with...
-			// 		JSR PRG026_AllowHammerToBreakLocks ; create hijack to added subroutine
-			"20", "26", "b5",
-			// NOP (*9) to keep ROM aligned
-			"ea", "ea", "ea", "ea", "ea", "ea", "ea", "ea", "ea"
+			"20", "26", "b5", // JSR RockBreak_IncLocks
+			"c9", "2", // CMP #$02	 ; see if need a horizontal or vertical path
+			"90", "c", // BLT PRG026_A6D2	 ; If rock, jump to PRG026_A6D2
+			"ea", "ea", "ea", "ea", "ea" // NOP * 5
 		]
 	},
 
