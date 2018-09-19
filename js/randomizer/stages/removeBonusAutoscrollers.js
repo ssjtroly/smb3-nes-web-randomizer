@@ -1,0 +1,3 @@
+var removeBonusAutoscrollers = function(ROM) {
+	
+}

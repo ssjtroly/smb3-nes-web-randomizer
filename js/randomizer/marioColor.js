@@ -1,3 +1,7 @@
+function rgbToName(rgb) {
+	return "#" + rgb[0].toString(16).padStart(2, '0') + rgb[1].toString(16).padStart(2, '0') + rgb[2].toString(16).padStart(2, '0');
+}
+
 function getNESColorPalette() {
 	var palette = [];
 
@@ -35,19 +39,23 @@ function getRandomNESPaletteColor(palette) {
 }
 
 function getRandomMarioColors(palette, overrideSkinColor = null) {
-	var complexionIndex = getRandomInt(2) === 0 ? getBiasRandomIntRange(0, 4, 3, 1.0) : getBiasRandomIntRange(0, 4, 0, 1.0);
+	var complexionIndex = getRandomInt(2) === 0 ? getBiasRandomIntRange(0, 4, 2, 1.0) : getBiasRandomIntRange(0, 4, 0, 1.0);
 
-	var toneIndex = (complexionIndex === 0 || complexionIndex === 1) ? getBiasRandomIntRange(0, 0xC, 0x5, 1.0) : getBiasRandomIntRange(0, 0xD, 0x5, 1.0);
+	var toneIndex = (complexionIndex === 0 || complexionIndex === 1) ? getBiasRandomIntRange(0, 0xC, 0x5, 1.0) : getBiasRandomIntRange(1, 0xD, 0x5, 1.0);
 	var toneLowerBound = toneIndex-2;
 	var toneUpperBound = toneIndex+2;
 
+	if (toneLowerBound < 0) {
+		toneLowerBound = 0xC+toneLowerBound;
+	}
+
 	// wrap bounds
 	if (complexionIndex === 0 || complexionIndex === 1) {
-		toneLowerBound = mod(toneLowerBound, 0xC);
-		toneUpperBound = mod(toneUpperBound, 0xC);
+		toneLowerBound = wrap(toneLowerBound, 0, 0xC);
+		toneUpperBound = wrap(toneUpperBound, 0, 0xC);
 	} else {
-		toneLowerBound = mod(toneLowerBound, 0xD);
-		toneUpperBound = mod(toneUpperBound, 0xD);
+		toneLowerBound = wrap(toneLowerBound, 1, 0xD);
+		toneUpperBound = wrap(toneUpperBound, 1, 0xD);
 	}
 
 	// one of the bounds had wrapped around
@@ -241,12 +249,13 @@ function setMarioColor(ROM, marioColor, marioComplexion) {
 		//ROM[rom.marioColorMapPowerUpPost2Pointer+5] = 0x0F;
 		//ROM[rom.marioColorMapPowerUpPost2Pointer+6] = 0x0F;
 
-		ui.addSpoiler("Mario Small/Big/Leaf Colors > " + normalColors[0]);
-		ui.addSpoiler("Luigi Small/Big/Leaf Colors > " + normalColors[1]);
-		ui.addSpoiler("Fire Colors > " + fireColors);
-		ui.addSpoiler("Frog Colors > " + frogColors);
-		ui.addSpoiler("Tanooki Colors > " + tanookiColors);
-		ui.addSpoiler("Hammer Colors > " + hammerColors);
+		ui.addSpoiler("Randomized Mario Colors");
+		ui.addSpoiler("&#9;Mario Small/Big/Leaf Colors > " + rgbToName(lookupNESRGB(normalColors[0][0])) + ", " + rgbToName(lookupNESRGB(normalColors[0][1])));
+		ui.addSpoiler("&#9;Luigi Small/Big/Leaf Colors > " + rgbToName(lookupNESRGB(normalColors[1][0])) + ", " + rgbToName(lookupNESRGB(normalColors[1][1])));
+		ui.addSpoiler("&#9;Fire Colors > " + rgbToName(lookupNESRGB(fireColors[0])) + ", " + rgbToName(lookupNESRGB(fireColors[1])));
+		ui.addSpoiler("&#9;Frog Colors > " + rgbToName(lookupNESRGB(frogColors[0])) + ", " + rgbToName(lookupNESRGB(frogColors[1])));
+		ui.addSpoiler("&#9;Tanooki Colors > " + rgbToName(lookupNESRGB(tanookiColors[0])) + ", " + rgbToName(lookupNESRGB(tanookiColors[1])));
+		ui.addSpoiler("&#9;Hammer Colors > " + rgbToName(lookupNESRGB(hammerColors[0])) + ", " + rgbToName(lookupNESRGB(hammerColors[1])));
 		ui.addSpoiler();
 	}
 }

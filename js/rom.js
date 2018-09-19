@@ -45,19 +45,17 @@ var LevelType = {
 	Fortress: 		1 << 3,
 	Ship: 			1 << 4,
 	HammerBro: 		1 << 5,
-	Special: 		1 << 6,
-	Castle: 		1 << 7,
-	Lost: 			1 << 8,
-	Boss: 			1 << 9,
-	CoinShip: 		1 << 10,
-	Pipe: 			1 << 11,
-	Lost: 			1 << 12,
-	Hidden: 		1 << 13,
-	Tower: 			1 << 14,
-	ToadHouse: 		1 << 15,
-	Spade: 			1 << 16,
-	Entrance: 		1 << 17,
-	Exit: 			1 << 18,
+	Castle: 		1 << 6,
+	Lost: 			1 << 7,
+	Boss: 			1 << 8,
+	CoinShip: 		1 << 9,
+	Pipe: 			1 << 10,
+	Hidden: 		1 << 11,
+	Tower: 			1 << 12,
+	ToadHouse: 		1 << 13,
+	Spade: 			1 << 14,
+	Entrance: 		1 << 15,
+	Exit: 			1 << 16,
 	Any: 			0xFFFFFFFF
 };
 var LevelEnemyType = { // type used for enemy randomizations
@@ -105,14 +103,24 @@ var WorldFlag = {
 	Any: 			0xFFFFFFFF
 };
 var WorldIndex = { // warp values
-	World1: 		0x0,
-	World2: 		0x1,
-	World3: 		0x2,
-	World4: 		0x3,
-	World5: 		0x4,
-	World6: 		0x5,
-	World7: 		0x6,
-	World8: 		0x7,
+	World1: 		0,
+	World2: 		1 << 1,
+	World3: 		1 << 2,
+	World4: 		1 << 3,
+	World5: 		1 << 4,
+	World6: 		1 << 5,
+	World7: 		1 << 6,
+	World8: 		1 << 7,
+	Any: 			0xFFFFFFFF
+};
+var ItemBlockType = {
+	None: 			0,
+	Question: 		1 << 1,
+	Brick: 			1 << 2,
+	MovableWooden: 	1 << 3,
+	Invisible: 		1 << 4,
+	Note: 			1 << 5,
+	Any: 			0xFFFFFFFF
 };
 
 // the lab
@@ -607,54 +615,121 @@ var rom = {
 		],
 	},
 
+	mapPalettePointer: 0x36BE2,
+	mapPaletteIndexPointer: 0x1842D,
+
 	worlds: [
 		{ // world 1
 			mapSpritePointer: 0x185BA,
 			mapLocationPotiner: 0x19434,
 			mapLocationCount: 21,
+
+			hammerBroItemsPointer: 0x16190,
 		},
 		{ // world 2
 			mapSpritePointer: 0x1864B,
 			mapLocationPotiner: 0x194B6,
 			mapLocationCount: 47,
+
+			hammerBroItemsPointer: 0x16199,
 		},
 		{ // world 3
 			mapSpritePointer: 0x1876C,
 			mapLocationPotiner: 0x195D4,
 			mapLocationCount: 52,
+
+			hammerBroItemsPointer: 0x161A2,
 		},
 		{ // world 4
 			mapSpritePointer: 0x1891D,
 			mapLocationPotiner: 0x19710,
 			mapLocationCount: 34,
+
+			hammerBroItemsPointer: 0x161AB,
 		},
 		{ // world 5
 			mapSpritePointer: 0x18A3E,
 			mapLocationPotiner: 0x197E0,
 			mapLocationCount: 42,
+
+			hammerBroItemsPointer: 0x161B4,
 		},
 		{ // world 6
 			mapSpritePointer: 0x18B5F,
 			mapLocationPotiner: 0x198E0,
 			mapLocationCount: 57,
+
+			hammerBroItemsPointer: 0x161BD,
 		},
 		{ // world 7
 			mapSpritePointer: 0x18D10,
 			mapLocationPotiner: 0x19A3A,
 			mapLocationCount: 46,
+
+			hammerBroItemsPointer: 0x161C6,
 		},
 		{ // world 8
 			mapSpritePointer: 0x18E31,
 			mapLocationPotiner: 0x19B52,
 			mapLocationCount: 41,
+
+			hammerBroItemsPointer: 0x161CF,
 		},
 		{ // warp world
 			mapSpritePointer: 0x19072,
 			mapLocationPotiner: 0,
 			mapLocationCount: 0,
+
+			hammerBroItemsPointer: null,
 		}
 	],
 
+	toadHouseItem2Pointer: 0x3B14B,
+	toadHouseRandomItemPointer: 0x3B164,
+
+	// must use patch.addStartingXLocationCheck for this to have any effect
+	playerStartingLocationXPointer: 0x3DFC6,
+
+	// accepted values for whistle toadhouse
+	// 1 = Warp Whistle
+	// 2 = P-Wing
+	// 3 = Frog
+	// 4 = Tanooki
+	// 5 = Hammer
+	// 6 = Random Super Suit
+	// 7 = Random Basic Item
+	toadHouseItemName: [
+		"Whistle",
+		"P-Wing",
+		"Frog",
+		"Tanooki",
+		"Hammer Suit",
+		"Random Super Suit",
+		"Random Basic Item"
+	],
+	whistleToadHousePointer: 0x2D6D,
+	whistleHammerBroPointer: 0x1619D, // use debugInventoryItemName value
+	whistleW1FortressPointer: 0xD36A, // use debugInventoryItemName value - 1
+
+	// accepted values and names for starting inventory
+	debugInventoryItemName: [
+		"NULL", // 0
+		"Mushroom", // 1
+		"Flower", // 2
+		"Leaf", // 3
+		"Frog", // 4
+		"Tanooki", // 5
+		"Hammer Suit", // 6
+		"Cloud", // 7
+		"P-Wing", // 8
+		"Star", // 9
+		"Anchor", // 10
+		"Hammer", // 11
+		"Whistle", // 12
+		"Music Box", // 13
+	],
+	debugInventoryPointer: 0x30D8E,
+	
 	fromRawCharMainText: function(ch) {
 		var decoded = rom.mainTextDecodeTable[ch.toString()];
 		if (decoded !== undefined) return decoded;
@@ -765,8 +840,8 @@ var rom = {
 	},
 
 	getEnemyObject: function(id) {
-		for (var i = 0; i < rom.objects.length; i++) {
-			var obj = rom.objects[i];
+		for (var i = 0; i < rom.enemyObjects.length; i++) {
+			var obj = rom.enemyObjects[i];
 			if (obj.id === id) {
 				return obj;
 			}
@@ -781,8 +856,8 @@ var rom = {
 			[]
 		];
 
-		for (var i = 0; i < rom.objects.length; i++) {
-			var obj = rom.objects[i];
+		for (var i = 0; i < rom.enemyObjects.length; i++) {
+			var obj = rom.enemyObjects[i];
 			if (obj.hasOwnProperty("clan") && obj.hasOwnProperty("group") && obj.hasOwnProperty("type")) {
 				if (obj.clan === -1 || obj.type !== type) {
 					continue;
@@ -800,8 +875,8 @@ var rom = {
 	getEnemyObjectsWithProperty: function(propFunc, type = EnemyType.Any) {
 		var objs = [];
 
-		for (var i = 0; i < rom.objects.length; i++) {
-			var obj = rom.objects[i];
+		for (var i = 0; i < rom.enemyObjects.length; i++) {
+			var obj = rom.enemyObjects[i];
 			if ((obj.type & type) !== 0) {
 				if (propFunc(obj)) {
 					objs.push(obj);
@@ -812,7 +887,7 @@ var rom = {
 		return objs;
 	},
 
-	objects: [
+	enemyObjects: [
 		{ id: 0x7F, type: EnemyType.Piranha, clan: 1, group: 8, orientation: Orientation.Up, yOffset: -1, name: "Big Red Piranha" }, // OBJ_BIGREDPIRANHA; Big Red Piranha
 		{ id: 0x7D, type: EnemyType.Piranha, clan: 1, group: 8, orientation: Orientation.Up, yOffset: -1, name: "Big Green Piranha" }, // OBJ_BIGGREENPIRANHA; Big Green Piranha
 		{ id: 0x46, type: EnemyType.Piranha, clan: 1, group: 6, orientation: Orientation.Up, yOffset: -3, name: "Pipe Ptooie" }, // OBJ_PIRANHASPIKEBALL; Tall plant carrying spike ball
@@ -996,7 +1071,7 @@ var rom = {
 			{ bytes3: 81, bytes4: 5, enemyCount: 15, enemyPointer: 0xC537, objectPointer: 0x1FB92,
 				type: LevelType.Regular | LevelType.Entrance, enemyType: LevelEnemyType.Normal, name: "1", 
 				mapOffset: [ 0 ], },
-			{ bytes3: 99, bytes4: 3, enemyCount: 16, enemyPointer: 0xC6BA, objectPointer: 0x20F3A, 
+			{ bytes3: 99, bytes4: 32, enemyCount: 16, enemyPointer: 0xC6BA, objectPointer: 0x20F3A, 
 				type: LevelType.Regular | LevelType.Entrance, enemyType: LevelEnemyType.Normal, name: "2", 
 				mapOffset: [ 2 ], },
 			{ bytes3: 73, bytes4: 3, enemyCount: 15, enemyPointer: 0xC2FE, objectPointer: 0x1EE19, 
@@ -1023,7 +1098,7 @@ var rom = {
 			{ bytes3: 8, bytes4: 6, enemyCount: 0, enemyPointer: 0xC016, objectPointer: 0x1FA59, 
 				type: LevelType.Regular, enemyType: LevelEnemyType.Normal, name: "2 Bonus",
 				mapOffset: [ ], },
-			{ bytes3: 8, bytes4: 0, enemyCount: 1, enemyPointer: 0xCFE2, objectPointer: 0x27A3A, 
+			{ bytes3: 68, bytes4: 2, enemyCount: 1, enemyPointer: 0xCFE2, objectPointer: 0x2749A, 
 				type: LevelType.Regular, enemyType: LevelEnemyType.Normal, name: "3 Bonus",
 				mapOffset: [ ], },
 			{ bytes3: 5, bytes4: 2, enemyCount: 2, enemyPointer: 0xC594, objectPointer: 0x1FE58, 
@@ -1158,7 +1233,7 @@ var rom = {
 				type: LevelType.Spade, enemyType: LevelEnemyType.None, name: "Spade 2",
 				mapOffset: [ 26 ], },
 		],
-		[ // world 3 *** TODO: FILL IN PIPE MAP OFFSET ***
+		[ // world 3
 			{ bytes3: 6, bytes4: 1, enemyCount: 3, enemyPointer: 0xC650, objectPointer: 0x1F3F7, 
 				type: LevelType.Start, enemyType: LevelEnemyType.None, name: "Start",
 				mapOffset: [ 22 ], },
@@ -1249,27 +1324,29 @@ var rom = {
 			{ bytes3: 7, bytes4: 1, enemyCount: 3, enemyPointer: 0xC650, objectPointer: 0x1FDE8, 
 				type: LevelType.HammerBro, enemyType: LevelEnemyType.HammerBro, name: "Hammer Bros 4",
 				mapOffset: [ 18, 21, ], },
-			{ bytes3: 4, bytes4: 2, enemyCount: 3, enemyPointer: 0xC650, objectPointer: 0x213F7, 
-				type: LevelType.HammerBro, enemyType: LevelEnemyType.HammerBro, name: "Hidden Hammer Bros",
-				mapOffset: [ ], },
+			// objectPointer points to an address between 0x21294 (7-3) and 0x213FB (world 1 hammer bros)
+			// but somehow smb3 workshop has it listed and loads a level for it, lets just pretend this doesnt exist
+			//{ bytes3: 4, bytes4: 2, enemyCount: 3, enemyPointer: 0xC650, objectPointer: 0x213F7,
+			//	type: LevelType.HammerBro, enemyType: LevelEnemyType.HammerBro, name: "Hidden Hammer Bros",
+			//	mapOffset: [ ], }, 
 			{ bytes3: 16, bytes4: 9, enemyCount: 1, enemyPointer: 0xC158, objectPointer: 0x1AF91, 
 				type: LevelType.Pipe | LevelType.Entrance, enemyType: LevelEnemyType.Normal, name: "Pipe A End 1",
-				mapOffset: [ ], },
+				mapOffset: [ 23 ], },
 			{ bytes3: 16, bytes4: 9, enemyCount: 1, enemyPointer: 0xC158, objectPointer: 0x1AFEF, 
 				type: LevelType.Pipe | LevelType.Exit, enemyType: LevelEnemyType.Normal, name: "Pipe A End 2",
-				mapOffset: [ ], },
+				mapOffset: [ 19 ], },
 			{ bytes3: 16, bytes4: 8, enemyCount: 1, enemyPointer: 0xC15D, objectPointer: 0x1AE47, 
 				type: LevelType.Pipe | LevelType.Entrance, enemyType: LevelEnemyType.Normal, name: "Pipe B End 1",
-				mapOffset: [ ], },
+				mapOffset: [ 26 ], },
 			{ bytes3: 17, bytes4: 8, enemyCount: 1, enemyPointer: 0xC15D, objectPointer: 0x1AEA4, 
 				type: LevelType.Pipe | LevelType.Exit, enemyType: LevelEnemyType.Normal, name: "Pipe B End 2",
-				mapOffset: [ ], },
+				mapOffset: [ 40 ], },
 			{ bytes3: 14, bytes4: 5, enemyCount: 1, enemyPointer: 0xC162, objectPointer: 0x1AF01, 
 				type: LevelType.Pipe | LevelType.Entrance, enemyType: LevelEnemyType.Normal, name: "Pipe C End 1",
-				mapOffset: [ ], },
+				mapOffset: [ 39 ], },
 			{ bytes3: 14, bytes4: 5, enemyCount: 1, enemyPointer: 0xC162, objectPointer: 0x1AF49, 
 				type: LevelType.Pipe | LevelType.Exit, enemyType: LevelEnemyType.Normal, name: "Pipe C End 2",
-				mapOffset: [ ], },
+				mapOffset: [ 51 ], },
 			{ bytes3: 2, bytes4: 0, enemyCount: 1, enemyPointer: 0xD2BF, objectPointer: 0x2A807, 
 				type: LevelType.Castle | LevelType.Entrance, enemyType: LevelEnemyType.Fortress, name: "Castle",
 				mapOffset: [ 49 ], },
@@ -1310,7 +1387,7 @@ var rom = {
 				type: LevelType.Spade, enemyType: LevelEnemyType.None, name: "Spade 6",
 				mapOffset: [ 43 ], },
 		],
-		[ // world 4 *** TODO: FILL IN PIPE MAP OFFSET ***
+		[ // world 4
 			{ bytes3: 5, bytes4: 0, enemyCount: 2, enemyPointer: 0xD0FA, objectPointer: 0x27F6E, 
 				type: LevelType.Start, enemyType: LevelEnemyType.None, name: "Start",
 				mapOffset: [ 0 ], },
@@ -1377,7 +1454,9 @@ var rom = {
 			{ bytes3: 45, bytes4: 0, enemyCount: 4, enemyPointer: 0xCE27, objectPointer: 0x25289, 
 				type: LevelType.Fortress, enemyType: LevelEnemyType.Fortress, name: "Fortress 2 Underground Room",
 				mapOffset: [ ], },
-			{ bytes3: 15, bytes4: 11, enemyCount: 2, enemyPointer: 0xC998, objectPointer: 0x1B385, 
+			// the address for this is wrong in smb3 workshop, its listed as 0x1B385
+			// it skips the "starry background" object, 3 bytes from the actual start of object data
+			{ bytes3: 15, bytes4: 11, enemyCount: 2, enemyPointer: 0xC998, objectPointer: 0x1B382, 
 				type: LevelType.Fortress, enemyType: LevelEnemyType.Fortress, name: "Fortress 2 Bonus",
 				mapOffset: [ ], },
 			{ bytes3: 25, bytes4: 0, enemyCount: 1, enemyPointer: 0xD6B1, objectPointer: 0x2EC52, 
@@ -1388,16 +1467,16 @@ var rom = {
 				mapOffset: [ 5, 7, 8, 4, 13, 14, 21, 27, 22, 28, 23, 17, 19, 26 ], },
 			{ bytes3: 15, bytes4: 6, enemyCount: 1, enemyPointer: 0xC167, objectPointer: 0x1ADA9, 
 				type: LevelType.Pipe | LevelType.Entrance, enemyType: LevelEnemyType.Normal, name: "Pipe A End 1",
-				mapOffset: [ ], },
+				mapOffset: [ 1 ], },
 			{ bytes3: 15, bytes4: 6, enemyCount: 1, enemyPointer: 0xC167, objectPointer: 0x1ADF8, 
 				type: LevelType.Pipe | LevelType.Exit, enemyType: LevelEnemyType.Normal, name: "Pipe A End 2",
-				mapOffset: [ ], },
+				mapOffset: [ 31 ], },
 			{ bytes3: 16, bytes4: 9, enemyCount: 1, enemyPointer: 0xC16C, objectPointer: 0x1AF91, 
 				type: LevelType.Pipe | LevelType.Entrance, enemyType: LevelEnemyType.Normal, name: "Pipe B End 1",
-				mapOffset: [ ], },
+				mapOffset: [ 10 ], },
 			{ bytes3: 16, bytes4: 9, enemyCount: 1, enemyPointer: 0xC16C, objectPointer: 0x1AFEF, 
 				type: LevelType.Pipe | LevelType.Exit, enemyType: LevelEnemyType.Normal, name: "Pipe B End 2",
-				mapOffset: [ ], },
+				mapOffset: [ 15 ], },
 			{ bytes3: 2, bytes4: 0, enemyCount: 1, enemyPointer: 0xD2BF, objectPointer: 0x2A817, 
 				type: LevelType.Castle | LevelType.Entrance, enemyType: LevelEnemyType.None, name: "Castle",
 				mapOffset: [ 6 ], },
@@ -1530,16 +1609,16 @@ var rom = {
 				type: LevelType.Ship | LevelType.Boss, enemyType: LevelEnemyType.Ship, name: "Ship Boss",
 				mapOffset: [ ], },
 			{ bytes3: 5, bytes4: 1, enemyCount: 3, enemyPointer: 0xC650, objectPointer: 0x20CC5, 
-				type: LevelType.HammerBro, enemyType: LevelEnemyType.HammerBro, name: "Hammer 1",
+				type: LevelType.HammerBro, enemyType: LevelEnemyType.HammerBro, name: "Hammer Bros 1",
 				mapOffset: [ 11, 0, 17, 13, 8, 14, 4, 9, 15 ], },
 			{ bytes3: 6, bytes4: 1, enemyCount: 3, enemyPointer: 0xC650, objectPointer: 0x21432, 
-				type: LevelType.HammerBro, enemyType: LevelEnemyType.HammerBro, name: "Hammer 2",
+				type: LevelType.HammerBro, enemyType: LevelEnemyType.HammerBro, name: "Hammer Bros 2",
 				mapOffset: [ 19 ], },
 			{ bytes3: 9, bytes4: 1, enemyCount: 3, enemyPointer: 0xC650, objectPointer: 0x27FC3, 
-				type: LevelType.HammerBro, enemyType: LevelEnemyType.HammerBro, name: "Hammer 3",
+				type: LevelType.HammerBro, enemyType: LevelEnemyType.HammerBro, name: "Hammer Bros 3",
 				mapOffset: [ 22 ], },
 			{ bytes3: 6, bytes4: 1, enemyCount: 3, enemyPointer: 0xC650, objectPointer: 0x2799B, 
-				type: LevelType.HammerBro, enemyType: LevelEnemyType.HammerBro, name: "Hammer 4",
+				type: LevelType.HammerBro, enemyType: LevelEnemyType.HammerBro, name: "Hammer Bros 4",
 				mapOffset: [ 36, 24, 30, 25, 32, 39, 27, 34 ], },
 			{ bytes3: 2, bytes4: 0, enemyCount: 1, enemyPointer: 0xD2BF, objectPointer: 0x2A827, 
 				type: LevelType.Castle | LevelType.Entrance, enemyType: LevelEnemyType.None, name: "Castle",
@@ -1655,10 +1734,10 @@ var rom = {
 				type: LevelType.Ship | LevelType.Boss, enemyType: LevelEnemyType.ShipBoss, name: "Ship Boss",
 				mapOffset: [ ], },
 			{ bytes3: 5, bytes4: 0, enemyCount: 3, enemyPointer: 0xC650, objectPointer: 0x23F20, 
-				type: LevelType.HammerBro, enemyType: LevelEnemyType.HammerBro, name: "Hammer 1",
+				type: LevelType.HammerBro, enemyType: LevelEnemyType.HammerBro, name: "Hammer Bros 1",
 				mapOffset: [ 6, 13, 3, 10, 11, 24, 32, 34, 40, 18, 20, 35, 41, 19, 21, 28, 36, 22, 43, 30, 47, 54, 45, 55, 46, 49, 50, 51, 52 ], },
 			{ bytes3: 6, bytes4: 0, enemyCount: 3, enemyPointer: 0xC650, objectPointer: 0x23F8E, 
-				type: LevelType.HammerBro, enemyType: LevelEnemyType.HammerBro, name: "Hammer 2",
+				type: LevelType.HammerBro, enemyType: LevelEnemyType.HammerBro, name: "Hammer Bros 2",
 				mapOffset: [ 1, 38, 26 ], },
 			{ bytes3: 15, bytes4: 6, enemyCount: 1, enemyPointer: 0xC149, objectPointer: 0x1ADA9, 
 				type: LevelType.Pipe | LevelType.Entrance, enemyType: LevelEnemyType.Normal, name: "Pipe A End 1",
@@ -1761,7 +1840,9 @@ var rom = {
 			{ bytes3: 14, bytes4: 2, enemyCount: 1, enemyPointer: 0xD102, objectPointer: 0x27F87, 
 				type: LevelType.Regular, enemyType: LevelEnemyType.Normal, name: "8 Bonus 1",
 				mapOffset: [ ], },
-			{ bytes3: 16, bytes4: 15, enemyCount: 2, enemyPointer: 0xC9B3, objectPointer: 0x1B5F5, 
+			// the address for this is wrong in smb3 workshop, its listed as 0x1B5F5
+			// again, it skips the "starry background" object, 3 bytes from the actual start of object data
+			{ bytes3: 16, bytes4: 15, enemyCount: 2, enemyPointer: 0xC9B3, objectPointer: 0x1B5F2,
 				type: LevelType.Regular, enemyType: LevelEnemyType.Normal, name: "8 Bonus 2",
 				mapOffset: [ ], },
 			{ bytes3: 2, bytes4: 0, enemyCount: 1, enemyPointer: 0xD10F, objectPointer: 0x28FEE, 
@@ -1773,7 +1854,9 @@ var rom = {
 			{ bytes3: 36, bytes4: 13, enemyCount: 0, enemyPointer: 0xC016, objectPointer: 0x2B3DB, 
 				type: LevelType.Fortress, enemyType: LevelEnemyType.Fortress, name: "Fortress 1 Lonely",
 				mapOffset: [ ], },
-			{ bytes3: 16, bytes4: 15, enemyCount: 1, enemyPointer: 0xC9B6, objectPointer: 0x1B5F5, 
+			// the address for this is wrong in smb3 workshop, its listed as 0x1B5F5
+			// again, it skips the "starry background" object, 3 bytes from the actual start of object data
+			{ bytes3: 16, bytes4: 15, enemyCount: 1, enemyPointer: 0xC9B6, objectPointer: 0x1B5F2,
 				type: LevelType.Fortress, enemyType: LevelEnemyType.Fortress, name: "Fortress 1 Bonus",
 				mapOffset: [ ], },
 			{ bytes3: 4, bytes4: 17, enemyCount: 6, enemyPointer: 0xD46C, objectPointer: 0x2AFE8, 
@@ -1786,12 +1869,12 @@ var rom = {
 				type: LevelType.Ship | LevelType.Boss, enemyType: LevelEnemyType.ShipBoss, name: "Ship Boss",
 				mapOffset: [ ], },
 			{ bytes3: 7, bytes4: 1, enemyCount: 3, enemyPointer: 0xC650, objectPointer: 0x1F438, 
-				type: LevelType.HammerBro, enemyType: LevelEnemyType.HammerBro, name: "Hammer 1",
+				type: LevelType.HammerBro, enemyType: LevelEnemyType.HammerBro, name: "Hammer Bros 1",
 				mapOffset: [ 1, 2, 26, 12, 32, 15, 18, 39, 44 ], },
 			{ bytes3: 15, bytes4: 6, enemyCount: 1, enemyPointer: 0xC126, objectPointer: 0x1ADA9, 
 				type: LevelType.Pipe | LevelType.Entrance, enemyType: LevelEnemyType.Normal, name: "Pipe A End 1",
 				mapOffset: [ 8 ], },
-			{ bytes3: 15, bytes4: 6, enemyCount: 1, enemyPointer: 0xC126, objectPointer: 0x1ADA8, 
+			{ bytes3: 15, bytes4: 6, enemyCount: 1, enemyPointer: 0xC126, objectPointer: 0x1ADF8, 
 				type: LevelType.Pipe | LevelType.Exit, enemyType: LevelEnemyType.Normal, name: "Pipe A End 2",
 				mapOffset: [ 4 ], },
 			{ bytes3: 10, bytes4: 5, enemyCount: 1, enemyPointer: 0xC135, objectPointer: 0x1B04D, 
@@ -1874,7 +1957,7 @@ var rom = {
 			{ bytes3: 91, bytes4: 5, enemyCount: 39, enemyPointer: 0xD97F, objectPointer: 0x2F8E3, 
 				type: LevelType.Ship | LevelType.Entrance, enemyType: LevelEnemyType.Ship, name: "Tank 1",
 				mapOffset: [ 5 ], },
-			{ bytes3: 73, bytes4: 18, enemyCount: 26, enemyPointer: 0xD8DC, objectPointer: 0x2F6C1, 
+			{ bytes3: 73, bytes4: 18, enemyCount: 26, enemyPointer: 0xD8DC, objectPointer: 0x2F6C1, // 2F6C1
 				type: LevelType.Ship | LevelType.Entrance, enemyType: LevelEnemyType.Ship, name: "Battleship",
 				mapOffset: [ 7 ], },
 			{ bytes3: 11, bytes4: 9, enemyCount: 5, enemyPointer: 0xD0C0, objectPointer: 0x27D50, 
@@ -1987,9 +2070,9 @@ var rom = {
 			{ bytes3: 52, bytes4: 32, enemyCount: 8, enemyPointer: 0xD411, objectPointer: 0x2B764, 
 				type: LevelType.Lost | LevelType.Regular, enemyType: LevelEnemyType.Normal, name: "Lost 5",
 				mapOffset: [ ], },
-			{ bytes3: 60, bytes4: 1, enemyCount: 11, enemyPointer: 0xCBF5, objectPointer: 0x232CF, 
-				type: LevelType.Lost | LevelType.Regular, enemyType: LevelEnemyType.Normal, name: "Lost 6",
-				mapOffset: [ ], },
+			{ bytes3: 60, bytes4: 1, enemyCount: 11, enemyPointer: 0xCBF5, objectPointer: 0x232CF,
+				type: LevelType.Lost | LevelType.Regular, enemyType: LevelEnemyType.Normal, name: "Lost 6", 
+				mapOffset: [ ], }, // world 1 start block
 			{ bytes3: 107, bytes4: 3, enemyCount: 17, enemyPointer: 0xCCB0, objectPointer: 0x237CA, 
 				type: LevelType.Lost | LevelType.Regular, enemyType: LevelEnemyType.Normal, name: "Lost 7",
 				mapOffset: [ ], },
@@ -2017,6 +2100,309 @@ var rom = {
 			{ bytes3: 11, bytes4: 11, enemyCount: 2, enemyPointer: 0xC73B, objectPointer: 0x26E71, 
 				type: LevelType.Lost | LevelType.Regular, enemyType: LevelEnemyType.Normal, name: "Lost 15",
 				mapOffset: [ ], },
+		],
+	],
+
+	getItemBlockObject: function(type, bank, id) {
+		for (var i = 0; i < rom.itemBlock.length; i++) {
+			if (rom.itemBlock[i].type === type && rom.itemBlock[i].bank === bank && rom.itemBlock[i].id === id) {
+				return rom.itemBlock[i];
+			}
+		}
+
+		return null;
+	},
+
+	getItemBlockObjects: function(type, bank) {
+		var itemBlocks = [];
+		for (var i = 0; i < rom.itemBlock.length; i++) {
+			if (rom.itemBlock[i].type === type && rom.itemBlock[i].bank === bank) {
+				itemBlocks.push(rom.itemBlock[i]);
+			}
+		}
+
+		return itemBlocks;
+	},
+
+	itemBlock: [
+		{ type: ItemBlockType.Question, bank: 1, id: 0, name: "? Block With Flower" }, // ? block with flower
+		{ type: ItemBlockType.Question, bank: 1, id: 1, name: "? Block With Leaf" }, // ? block with leaf
+		{ type: ItemBlockType.Question, bank: 1, id: 2, name: "? Block With Star" }, // ? block with star
+		{ type: ItemBlockType.Question, bank: 1, id: 3, name: "? Block With Continuious Star" }, // ? block with continuious star
+		{ type: ItemBlockType.Question, bank: 1, id: 4, name: "? Block With Coin" }, // ? block with single coin
+		{ type: ItemBlockType.Question, bank: 1, id: 32, name: "? Block" }, // ? block
+
+		{ type: ItemBlockType.Brick, bank: 1, id: 6, name: "Brick With Flower" }, // brick with flower
+		{ type: ItemBlockType.Brick, bank: 1, id: 7, name: "Brick With Leaf" }, // brick with leaf
+		{ type: ItemBlockType.Brick, bank: 1, id: 8, name: "Brick With Star" }, // brick with star
+		{ type: ItemBlockType.Brick, bank: 1, id: 9, name: "Brick With Continuious Star" }, // brick with continuious star
+		{ type: ItemBlockType.Brick, bank: 1, id: 10, name: "Brick With Multiple Coins" }, // brick with mutliple coins
+		{ type: ItemBlockType.Brick, bank: 1, id: 11, name: "Brick With 1-Up" }, // brick with 1-up
+	//	{ type: ItemBlockType.Brick, bank: 1, id: 16, name: "Brick" }, // brick, this could possibly break levels if it randomizes to unbreakable
+		{ type: ItemBlockType.Brick, bank: 1, id: 48, name: "Brick With Coin" }, // brick with single coin
+
+		{ type: ItemBlockType.MovableWooden, bank: 1, id: 112, name: "Movable Wooden Block" }, // movable wooden block
+		{ type: ItemBlockType.MovableWooden, bank: 2, id: 4, name: "Movable Wooden Block With Flower" }, // movable wooden block with flower
+		{ type: ItemBlockType.MovableWooden, bank: 2, id: 5, name: "Movable Wooden Block With Leaf" }, // movable wooden block with leaf
+		{ type: ItemBlockType.MovableWooden, bank: 2, id: 6, name: "Movable Wooden Block With Star" }, // movable wooden block with star
+
+		{ type: ItemBlockType.Invisible, bank: 1, id: 14, name: "Invisible Brick With Coin" }, // invisible brick with coin
+		{ type: ItemBlockType.Invisible, bank: 1, id: 15, name: "Invisible Brick With 1-Up" }, // invisible brick 1-up
+
+		{ type: ItemBlockType.Note, bank: 1, id: 96, name: "Note Block" }, // note block
+		{ type: ItemBlockType.Note, bank: 2, id: 1, name: "Note Block With Flower" }, // note block with flower
+		{ type: ItemBlockType.Note, bank: 2, id: 2, name: "Note Block With Leaf" }, // note block with leaf
+		{ type: ItemBlockType.Note, bank: 2, id: 3, name: "Note Block With Star" }, // note block with star
+	],
+
+	// i dont know of any other way to determine which objects are 3 bytes and which are 4 bytes
+	// so i just made the arrays below to lookup 4 byte objects then assume the rest are 3 bytes
+	isObject4Byte: function(style, bank, type) {
+		var shared4Byte = rom.sharedObjects4Byte;
+		var shared4ByteEnd = shared4Byte.start+shared4Byte.length;
+		if (bank === shared4Byte.bank && (type >= shared4Byte.start && type < shared4ByteEnd)) {
+			return true;
+		}
+
+		for (var i = 0; i < rom.objects4Byte[style].length; i++) {
+			var obj4Byte = rom.objects4Byte[style][i];
+			var obj4ByteEnd = obj4Byte.start+obj4Byte.length;
+			if (bank === obj4Byte.bank && (type >= obj4Byte.start && type < obj4ByteEnd)) {
+				return true;
+			} 
+		}
+
+		return false;
+	},
+
+	sharedObjects4Byte: {
+		bank: 2,
+		start: 0x60,
+		length: 0x80
+	},
+	objects4Byte: [
+		[ // 0 - mario graphics?
+		],
+		[ // 1 - plains
+			{
+				bank: 0,
+				start: 0xC0,
+				length: 0x20
+			},
+		],
+		[ // 2 - dungeon
+			{
+				bank: 0,
+				start: 0xE0,
+				length: 0x20
+			},
+			{
+				bank: 3,
+				start: 0x20,
+				length: 0x30
+			},
+			{
+				bank: 3,
+				start: 0xD0,
+				length: 0x10
+			},
+		],
+		[ // 3 - hills
+			{
+				bank: 4,
+				start: 0x10,
+				length: 0xC0
+			},
+		],
+		[ // 4 - sky
+			// bank 0, 0x10-0x1F
+			// bank 3, 0xA0-0xAF
+			{
+				bank: 0,
+				start: 0x10,
+				length: 0x10
+			},
+			{
+				bank: 3,
+				start: 0xA0,
+				length: 0x10
+			}
+		],
+		[ // 5 - plant
+			{
+				bank: 3,
+				start: 0x40,
+				length: 0x10
+			},
+			{
+				bank: 3,
+				start: 0x70,
+				length: 0x10
+			},
+		],
+		[ // 6 - water
+			{
+				bank: 3,
+				start: 0x50,
+				length: 0x10
+			},
+			{
+				bank: 3,
+				start: 0xD0,
+				length: 0x10
+			},
+		],
+		[ // 7 - mushroom
+		],
+		[ // 8 - Pipe
+			{
+				bank: 3,
+				start: 0x50,
+				length: 0x10
+			},
+			{
+				bank: 3,
+				start: 0xD0,
+				length: 0x10
+			},
+		],
+		[ // 9 - desert
+			{
+				bank: 0,
+				start: 0xB0,
+				length: 0x40
+			},
+		],
+		[ // A - ship
+			{
+				bank: 0,
+				start: 0x20,
+				length: 0x20
+			},
+			{
+				bank: 3,
+				start: 0x40,
+				length: 0x10
+			},
+			{
+				bank: 3,
+				start: 0x70,
+				length: 0x10
+			},
+		],
+		[ // B - giant
+			{
+				bank: 0,
+				start: 0xE0,
+				length: 0x10
+			},
+			{
+				bank: 3,
+				start: 0x10,
+				length: 0x20
+			},
+			{
+				bank: 3,
+				start: 0x40,
+				length: 0x10
+			},
+			{
+				bank: 3,
+				start: 0x70,
+				length: 0x10
+			},
+			{
+				bank: 3,
+				start: 0x70,
+				length: 0x10
+			}
+		],
+		[ // C - ice
+			{
+				bank: 0,
+				start: 0x10,
+				length: 0x10
+			},
+			{
+				bank: 3,
+				start: 0xA0,
+				length: 0x10
+			},
+		],
+		[ // D - cloud
+			{
+				bank: 0,
+				start: 0xE0,
+				length: 0x10
+			},
+			{
+				bank: 3,
+				start: 0x10,
+				length: 0x20
+			},
+			{
+				bank: 3,
+				start: 0x40,
+				length: 0x10
+			},
+			{
+				bank: 3,
+				start: 0x70,
+				length: 0x10
+			}
+		],
+		[ // E - underground
+			{
+				bank: 4,
+				start: 0x10,
+				length: 0xC0
+			}
+		],
+		[ // F - spade
+		],
+		// not sure why object sets beyond this exist, they appear to be the same
+		[ // 10
+		],
+		[ // 11
+		],
+		[ // 12
+		],
+		[ // 13 - hills?
+			{
+				bank: 4,
+				start: 0x10,
+				length: 0xC0
+			},
+		],
+		[ // 14 
+		],
+		[ // 15  - tank?
+			{
+				bank: 0,
+				start: 0x20,
+				length: 0x20
+			},
+			{
+				bank: 3,
+				start: 0x40,
+				length: 0x10
+			},
+			{
+				bank: 3,
+				start: 0x70,
+				length: 0x10
+			},
+		],
+		[ // 16
+		],
+		[ // 17
+		],
+		[ // 18
+		],
+		[ // 19
+		],
+		[ // 1A
+			
 		],
 	],
 

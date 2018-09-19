@@ -1,0 +1,3 @@
+var removeShipAutoscrollers = function(ROM) {
+	
+}

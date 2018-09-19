@@ -1,8 +1,17 @@
 function setPermanentPowerup(ROM, powerup) {
 	jsps.applyObjectInline(patch.disablePowerups, ROM);
+	// fix cloud not being applied from disabled powerups
+	jsps.applyObjectInline(patch.allowCloudOnPermanentPowerup, ROM);
+
+	var randomPowerups = [ 0, 1, 2, 3, 4, 5, 6, 256, 257 ];
+	if (powerup === 258) {
+		powerup = randomPowerups[getRandomInt(randomPowerups.length)];
+	}
 
 	if (powerup === 0 || powerup === 1 || powerup === 2 || powerup === 6) {
 		// small or big
+
+		// dont think this is necessary
 		jsps.applyObjectInline(patch.disableVerticalScrollLock, ROM);
 
 		// they just need these fixes because flying is required on these levels
@@ -16,6 +25,8 @@ function setPermanentPowerup(ROM, powerup) {
 		ROM[rom.playerSuitChangeOnTimeUpPointer] = powerup+1;
 	} else if (powerup === 4) {
 		// frog
+
+		// dont think this is necessary
 		jsps.applyObjectInline(patch.disableVerticalScrollLock, ROM);
 
 		// need all fixes because frog cant fly or duck

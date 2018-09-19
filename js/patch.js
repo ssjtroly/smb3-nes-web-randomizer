@@ -5,6 +5,7 @@ var patch = {
 		// BUG!  Map_EnterSpecialTiles is much smaller than this, should be $0A!
 		// Causes some bytes used for palette data to be considered!
 		"14ED8": [
+			// change #$1A to #$0A
 			0x0A
 		],
 
@@ -58,196 +59,6 @@ var patch = {
 			// change '-$04' to '$02'
 			0x02
 		],
-	},
-
-	frogFix6_3: {
-		"caa1": [
-			"19"
-		],
-		"cab0": [
-			"19"
-		]
-	},
-
-	frogFix6_5: {
-		"20858": [
-			"33",
-			"4a",
-			"80",
-			"2f",
-			"4c",
-			"80",
-			"37",
-			"4c",
-			"d"
-		],
-		"20966": [
-			"34",
-			"18"
-		],
-		"20969": [
-			"30",
-			"1a"
-		],
-		"c60e": [
-			"6d",
-			"4e",
-			"5",
-			"33"
-		],
-		"c613": [
-			"8",
-			"40"
-		],
-		"c616": [
-			"18"
-		],
-		"208a2": [
-			"32",
-			"27"
-		],
-		"208a5": [
-			"2e",
-			"25",
-			"e",
-			"2b",
-			"4a",
-			"80"
-		],
-		"2095e": [
-			"4c",
-			"80"
-		],
-		"2096c": [
-			"2c",
-			"18"
-		],
-		"2096f": [
-			"28",
-			"1a"
-		]
-	},
-
-	frogFix6_F1: {
-		"d4e8": [
-			"15",
-			"c"
-		],
-		"d4eb": [
-			"16",
-			"14",
-			"5a"
-		],
-		"2b23f": [
-			"13",
-			"2"
-		],
-		"2b254": [
-			"e4"
-		],
-		"2b25c": [
-			"e8"
-		],
-		"2b25f": [
-			"16"
-		],
-		"2b261": [
-			"c",
-			"15"
-		],
-		"2b294": [
-			"f",
-			"24",
-			"c1"
-		]
-	},
-
-	frogFix6_F2: {
-		"22c1b": [
-			"3e"
-		],
-		"22c1d": [
-			"72"
-		]
-	},
-
-	frogFix7_7: {
-		"23dae": [
-			"34",
-			"47"
-		],
-		"23e1e": [
-			"6f"
-		],
-		"23e96": [
-			"93"
-		],
-		"23e99": [
-			"93"
-		],
-		"23e9c": [
-			"93"
-		],
-		"23e9f": [
-			"94"
-		],
-		"23eec": [
-			"2b"
-		]
-	},
-
-	frogFix7_F1: {
-		"2b410": [
-			"29",
-			"14",
-			"62"
-		],
-		"2b42d": [
-			"2a",
-			"1b",
-			"14"
-		],
-		"2b447": [
-			"2c",
-			"26",
-			"60"
-		],
-		"2b453": [
-			"2e",
-			"2c",
-			"60"
-		]
-	},
-
-	frogFix7_F2: {
-		"2b006": [
-			"e6"
-		],
-		"2b00a": [
-			"e6"
-		]
-	},
-
-	frogFix8_1: {
-		"c452": [
-			"17"
-		],
-		"1f84b": [
-			"52",
-			"50"
-		],
-		"1f855": [
-			"57"
-		]
-	},
-
-	frogFix8_F1: {
-		"2baaa": [
-			"e6"
-		],
-		"2baac": [
-			"17"
-		]
 	},
 
 	// stolen from fcoughlin's randomizer, not sure what all this does exactly
@@ -431,14 +242,14 @@ var patch = {
 			"f0", "16", // BEQ RockBreak_LockVert ; need to test lock directly because they are scattered around
 
 			"20", "20", "b5", // JSR RockBreak_GetMapTileNearPlayer
-			"38", "e9", "56", // SUB #TILE_LOCKVERT
-			"c9", "0", // CMP #$00 
-			"f0", "f", // BEQ RockBreak_LockVert
+			"38", "e9", "56", // SUB #TILE_LOCKHORZ ; offset to horizontal lock
+			"c9", "0", // CMP #$00 ; is 0 when map tile is this lock
+			"f0", "f", // BEQ RockBreak_LockVert ; need to test lock directly because they are scattered around
 
 			"20", "20", "b5", // JSR RockBreak_GetMapTileNearPlayer
-			"38", "e9", "e4", // SUB #TILE_ALTLOCK
-			"c9", "0", // CMP #$00
-			"f0", "5", // BEQ RockBreak_LockHorz
+			"38", "e9", "e4", // SUB #TILE_ALTLOCK ; only found on sky portion of world 5? (only break horizontal)
+			"c9", "0", // CMP #$00 ; is 0 when map tile is this lock
+			"f0", "5", // BEQ RockBreak_LockHorz ; need to test lock directly because they are scattered around
 
 			"60", // RTS
 
@@ -465,10 +276,88 @@ var patch = {
 			// 		CMP #$02	 ; See if value is less than 2 (rock to break)
 			// 		BLT PRG026_A6D2	 ; If rock, jump to PRG026_A6D2
 			// with...
-			"20", "26", "b5", // JSR RockBreak_IncLocks
+			"20", "26", "b5", // JSR RockBreak_IncLocks ; entry point for hijack
 			"c9", "2", // CMP #$02	 ; see if need a horizontal or vertical path
 			"90", "c", // BLT PRG026_A6D2	 ; If rock, jump to PRG026_A6D2
 			"ea", "ea", "ea", "ea", "ea" // NOP * 5
+		]
+	},
+
+	disablePowerups_CloudFix: {
+		"35566": [
+			"bd",
+			"65",
+			"a5",
+			"c9",
+			"7",
+			"f0",
+			"b",
+			"ad",
+			"f6",
+			"4",
+			"9",
+			"80",
+			"8d",
+			"f6",
+			"4",
+			"4c",
+			"1b",
+			"a6",
+			"4c",
+			"dc",
+			"a5"
+		],
+		"345e9": [
+			"4c",
+			"56",
+			"b5",
+			"b9",
+			"6f",
+			"a5",
+			"8d",
+			"d2",
+			"7",
+			"b9",
+			"70",
+			"a5",
+			"8d",
+			"d3",
+			"7",
+			"b9",
+			"71",
+			"a5",
+			"8d",
+			"d4",
+			"7",
+			"a9",
+			"6",
+			"85",
+			"5e",
+			"bd",
+			"5c",
+			"a5",
+			"8d",
+			"f2",
+			"4",
+			"bd",
+			"65",
+			"a5",
+			"ae",
+			"26",
+			"7",
+			"8d",
+			"f3",
+			"3",
+			"ea",
+			"ea",
+			"ea",
+			"ea",
+			"ea",
+			"ea",
+			"ea",
+			"ea",
+			"ea",
+			"ea"
 		]
 	},
 
@@ -546,6 +435,199 @@ var patch = {
 		],	
 	},
 
+	// rearrange some levels to make them completable with frog suit
+	// frogFix_6_5, frogFix_6_F1, frogFix_6_F1, & frogFix_7_F1 are only needed for powerups that cant fly 
+	frogFix_6_3: {
+		"caa1": [
+			"19"
+		],
+		"cab0": [
+			"19"
+		]
+	},
+
+	frogFix_6_5: {
+		"20858": [
+			"33",
+			"4a",
+			"80",
+			"2f",
+			"4c",
+			"80",
+			"37",
+			"4c",
+			"d"
+		],
+		"20966": [
+			"34",
+			"18"
+		],
+		"20969": [
+			"30",
+			"1a"
+		],
+		"c60e": [
+			"6d",
+			"4e",
+			"5",
+			"33"
+		],
+		"c613": [
+			"8",
+			"40"
+		],
+		"c616": [
+			"18"
+		],
+		"208a2": [
+			"32",
+			"27"
+		],
+		"208a5": [
+			"2e",
+			"25",
+			"e",
+			"2b",
+			"4a",
+			"80"
+		],
+		"2095e": [
+			"4c",
+			"80"
+		],
+		"2096c": [
+			"2c",
+			"18"
+		],
+		"2096f": [
+			"28",
+			"1a"
+		]
+	},
+
+	frogFix_6_F1: {
+		"d4e8": [
+			"15",
+			"c"
+		],
+		"d4eb": [
+			"16",
+			"14",
+			"5a"
+		],
+		"2b23f": [
+			"13",
+			"2"
+		],
+		"2b254": [
+			"e4"
+		],
+		"2b25c": [
+			"e8"
+		],
+		"2b25f": [
+			"16"
+		],
+		"2b261": [
+			"c",
+			"15"
+		],
+		"2b294": [
+			"f",
+			"24",
+			"c1"
+		]
+	},
+
+	frogFix_6_F2: {
+		"22c1b": [
+			"3e"
+		],
+		"22c1d": [
+			"72"
+		]
+	},
+
+	frogFix_7_7: {
+		"23dae": [
+			"34",
+			"47"
+		],
+		"23e1e": [
+			"6f"
+		],
+		"23e96": [
+			"93"
+		],
+		"23e99": [
+			"93"
+		],
+		"23e9c": [
+			"93"
+		],
+		"23e9f": [
+			"94"
+		],
+		"23eec": [
+			"2b"
+		]
+	},
+
+	frogFix_7_F1: {
+		"2b410": [
+			"29",
+			"14",
+			"62"
+		],
+		"2b42d": [
+			"2a",
+			"1b",
+			"14"
+		],
+		"2b447": [
+			"2c",
+			"26",
+			"60"
+		],
+		"2b453": [
+			"2e",
+			"2c",
+			"60"
+		]
+	},
+
+	frogFix_7_F2: {
+		"2b006": [
+			"e6"
+		],
+		"2b00a": [
+			"e6"
+		]
+	},
+
+	frogFix_8_1: {
+		"c452": [
+			"17"
+		],
+		"1f84b": [
+			"52",
+			"50"
+		],
+		"1f855": [
+			"57"
+		]
+	},
+
+	frogFix_8_F1: {
+		"2baaa": [
+			"e6"
+		],
+		"2baac": [
+			"17"
+		]
+	},
+
+	// enables debug mode and somewhat fixes world select menu
 	enableDebugMode: {
 		"32739": [
 			"0",

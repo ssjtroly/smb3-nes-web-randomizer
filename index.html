@@ -36,9 +36,13 @@
 	<script type="text/javascript" src="js/randomizer/stages/shuffleOverworldPipes.js"></script>
 	<script type="text/javascript" src="js/randomizer/stages/shuffleWorldOrder.js"></script>
 	<script type="text/javascript" src="js/randomizer/stages/removeSomeAutoscrollers.js"></script>
+	<script type="text/javascript" src="js/randomizer/stages/removeBonusAutoscrollers.js"></script>
+	<script type="text/javascript" src="js/randomizer/stages/removeShipAutoscrollers.js"></script>
 	<script type="text/javascript" src="js/randomizer/stages/shuffleCastles.js"></script>
 	<script type="text/javascript" src="js/randomizer/stages/shuffleWorld8Ships.js"></script>
 	<script type="text/javascript" src="js/randomizer/stages/shuffleWarpZones.js"></script>
+	<script type="text/javascript" src="js/randomizer/stages/shuffleWorldPalettes.js"></script>
+	<script type="text/javascript" src="js/randomizer/stages/randomizeWorldPalettes.js"></script>
 
 	<script type="text/javascript" src="js/randomizer/enemies/randomizeEnemies.js"></script>
 	<script type="text/javascript" src="js/randomizer/enemies/randomizeHammerBros.js"></script>
@@ -60,6 +64,9 @@
 	<script type="text/javascript" src="js/randomizer/misc/alwaysRevertToSmall.js"></script>
 	<script type="text/javascript" src="js/randomizer/misc/infinitePSpeed.js"></script>
 
+	<script type="text/javascript" src="js/randomizer/DEBUG/enableDebugMode.js"></script>
+	<script type="text/javascript" src="js/randomizer/DEBUG/addItemToStartingInventory.js"></script>
+
 	<script type="text/javascript" src="js/randomizer.js"></script>
 	<!-- end javascript inclusion -->
 
@@ -76,6 +83,7 @@
 				headerImage.initialize();
 			}, 60000); // 1 minute
 		});
+
 		-->
 	</script>
 	<!-- end initialization of javasript -->
@@ -186,6 +194,7 @@
 		<option value="32">Ghost</option>
 		<option value="42">Alien</option>
 		<option value="256">Random</option>
+		<option value="257">Dynamic Random</option>
 	</select>
 	<span class="tooltip-text">The skin color for Mario's sprite (Luigi will always be random if Mario is not default)</span>
 	</div><br>
@@ -232,6 +241,7 @@
 		<option value="6">Hammer</option>
 		<option value="256">Quasi-P-Wing</option>
 		<option value="257">Quasi-P-Wing Tanooki</option>
+		<option value="258">Random</option>
 	</select>
 	<span class="tooltip-text"><div class="tooltip-warning">WARNING: FORCES OHKO MODE!</div><br>
 		Mario will always have this powerup and all other powerups only give points<br>
@@ -340,7 +350,6 @@
 		<input type="button" id="world-7-letter-text-submit" value="Submit" title="Submit this text to be reviewed for the randomized text pool." disabled/><br>
 		<br>
 		Final Letter:<br>
-		<br>
 		<input type="text" id="final-letter-text-editor" /><br>
 		<input type="button" id="final-letter-text-default" value="Default" />
 		<input type="button" id="final-letter-text-submit" value="Submit" title="Submit this text to be reviewed for the randomized text pool." disabled/><br>
@@ -352,11 +361,12 @@
 	<hr><br>
 	
 	<!-- start tabbed option list -->
-	<div class="tab-container">
+	<div id="tab-bar" class="tab-container">
 		<button class="tab">Stages</button>
 		<button class="tab">Enemies</button>
 		<button class="tab">Items</button>
 		<button class="tab">Miscellaneous</button>
+		<button id="debug-tab" class="tab" hidden>DEBUG</button>
 	</div>
 	<!-- end tabbed option list -->
 
@@ -421,7 +431,7 @@
 
 		<label class="option-label">
 			<div class="unimplemented tooltip tab-child-checkbox">
-				<input class="flaggable" id="remove-some-autoscrollers" type="checkbox" unchecked/>
+				<input class="flaggable" id="remove-bonus-autoscrollers" type="checkbox" unchecked/>
 				<div class="option-text">Remove Bonus Autoscrollers</div>
 				<span class="tooltip-text">Autoscroller status will be removed from bonus stages and coin ships</span>
 			</div>
@@ -456,6 +466,22 @@
 				<input class="flaggable" id="shuffle-warp-zones" type="checkbox" unchecked/>
 				<div class="option-text">Shuffle Warp Zones</div>
 				<span class="tooltip-text">The pipes in the warp zones will take you to difference worlds (Note: numbers do not reflect where they take you)</span>
+			</div>
+		</label>
+
+		<label class="option-label">
+			<div class="tooltip tab-child-checkbox">
+				<input class="flaggable" id="shuffle-world-palettes" type="checkbox" unchecked/>
+				<div class="option-text">Shuffle World Palettes</div>
+				<span class="tooltip-text">The palettes for worlds will be shuffled with other worlds (e.g. World 2 could end up looking like World 6)</span>
+			</div>
+		</label>
+
+		<label class="option-label">
+			<div class="tooltip tab-child-checkbox">
+				<input class="flaggable" id="randomize-world-palettes" type="checkbox" unchecked/>
+				<div class="option-text">Randomize World Palettes</div>
+				<span class="tooltip-text">The palettes for worlds will have random colors</span>
 			</div>
 		</label>
 
@@ -536,7 +562,7 @@
 		</label>
 
 		<label class="option-label">
-			<div class="unimplemented tooltip tab-child-checkbox">
+			<div class="tooltip tab-child-checkbox">
 				<input class="flaggable" id="randomize-item-blocks" type="checkbox" unchecked/>
 				<div class="option-text">Randomize Item Blocks</div>
 				<span class="tooltip-text">The contents of power-up blocks will be randomized</span>
@@ -545,7 +571,7 @@
 
 
 		<label class="option-label">
-			<div class="unimplemented tooltip tab-child-checkbox">
+			<div class="tooltip tab-child-checkbox">
 				<input class="flaggable" id="remove-warp-whistles" type="checkbox" unchecked/>
 				<div class="option-text">Remove Warp Whistles</div>
 				<span class="tooltip-text">Warp whistles will be removed from the game and replaced with random items</span>
@@ -625,6 +651,44 @@
 	</div>
 	<!-- end misc tab -->
 
+	<!-- start DEBUG tab -->
+	<div class="tab-content" id="debug-tab" hidden>
+
+		<label class="option-label">
+			<div class="tooltip tab-child-checkbox">
+				<input id="debug-mode" type="checkbox" unchecked/>
+				<div class="option-text">Enable Debug Mode</div>
+				<span class="tooltip-text">This will set the debug mode flag</span>
+			</div>
+		</label>
+
+		<label class="option-label">
+			<div class="tooltip tab-child-checkbox">
+				<input id="debug-add-item-to-starting-inventory" type="checkbox" unchecked/>
+				<div class="option-text">Add 
+					<select id="starting-inventory-item">
+						<option value="1">Mushroom</option>
+						<option value="2">Flower</option>
+						<option value="3">Leaf</option>
+						<option value="4">Frog</option>
+						<option value="5">Tanooki</option>
+						<option value="6">Hammer Suit</option>
+						<option value="7">Cloud</option>
+						<option value="8">P-Wing</option>
+						<option value="9">Star</option>
+						<option value="10">Anchor</option>
+						<option value="11" selected="selected">Hammer</option>
+						<option value="12">Whistle</option>
+						<option value="13">Music Box</option>
+					</select> 
+				To Starting Inventory</div>
+				<span class="tooltip-text">This will replace the P-Wings in the debug starter inventory with selected item (Note: still get one of each other item)</span>
+			</div>
+		</label>
+
+	</div>
+	<!-- end DEBUG tab -->
+
 	<br><hr><br>
 
 	<!-- start rom input -->
@@ -633,12 +697,14 @@
 	<input type="button" id="file-input-browse" value="Browse" /><br>
 	<!-- end rom input -->
 
-	<div hidden><!-- start hiding save/load config (NOT IMPLEMENTED) -->
+	<div><!-- start hiding save/load config (NOT IMPLEMENTED) -->
 	<br>
 
 	<!-- start configuration save/load -->
-	<input id="load-config" type="button" value="Load Config" disabled/>
-	<input id="save-config" type="button" value="Save Config" disabled/><br>
+	<input id="load-config" type="button" value="Load Config" title="Restore saved settings"/>
+	<input type="file" id="load-config-input" accept=".json" />
+	<input id="save-config" type="button" value="Save Config" title="Save all settings" />
+	<br>
 	<!-- end configuration save/load -->
 
 	</div><!-- end hiding save/load config (NOT IMPLEMENTED) -->
@@ -686,7 +752,7 @@
 	<!-- start credits section -->
 	<div id="credits">
 		Credit goes to <a href="https://www.twitch.tv/fcoughlin">FCoughlin</a> for the Randomize Koopa Kid HP option.<br>
-		Thanks to <a href="https://github.com/captainsouthbird">Captain Southbird</a> for the <a href="https://github.com/captainsouthbird/smb3">disassembly</a> of Super Mario Bros 3.<br>
+		Thanks to <a href="http://www.sonicepoch.com/sm3mix/">Captain Southbird</a> for the <a href="https://github.com/captainsouthbird/smb3">disassembly</a> of Super Mario Bros 3.<br>
 		Thanks to <a href="http://hukka.ncn.fi/">Hukka</a> for <a href="https://www.romhacking.net/utilities/298/">SMB3 Workshop</a>.<br>
 		And thanks to Spinzig for the enemy compatibility chart in the SMB3 Workshop docs.
 	</div>

@@ -5,6 +5,8 @@ var ui = {
 	],
 
 	changelogEntry: [
+		{ date: new Date("2018-9-17"), text: "Implemented item block randomizer." },
+		{ date: new Date("2018-9-16"), text: "Implemented debug enabler and option for setting the item that fills inventory. Set a URL parameter called \"debug\" to true to access this. (e.g. index.html?debug=true)" },
 		{ date: new Date("2018-9-15"), text: "Implemented hammer ability to break fortress locks. This hack actually isn't stolen, see patch.allowHammerToBreakLocks in <a href=\"js/patch.js\">patch.js</a> for assembly documentation." },
 		{ date: new Date("2018-9-14"), text: "Implemented music and sound effects randomizer." },
 		{ date: new Date("2018-9-9"), text: "Implemented one hit K.O. mode and permanent powerups." },
@@ -118,6 +120,7 @@ var ui = {
 	//finalLetterSalutationTextEditor: null,
 
 	currentTab: -1,
+	tabBar: null,
 	tabButtons: null,
 	tabContent: null,
 
@@ -128,10 +131,13 @@ var ui = {
 	shuffleCastles: null,
 	randomizeHammerBroLevels: null,
 	removeSomeAutoscrollers: null,
+	removeBonusAutoscrollers: null,
 	removeShipAutoscrollers: null,
 	shuffleOverworldPipes: null,
 	shuffleWorldOrder: null,
 	shuffleWarpZones: null,
+	shuffleWorldPalettes: null,
+	randomizerWorldPalettes: null,
 	randomizeEnemies: null,
 	randomizeKoopaEarthquakes: null,
 	randomizeKoopaKidHP: null,
@@ -154,6 +160,9 @@ var ui = {
 	generateRom: null,
 	lastGenerated: null,
 	saveRom: null,
+	loadConfig: null,
+	loadConfigInput: null,
+	saveConfig: null,
 	generationStatus: null,
 	generateSpoilers: null,
 
@@ -162,6 +171,10 @@ var ui = {
 	spoilerLogContainer: null,
 	spoilerLog: null,
 	saveSpoilerLog: null,
+
+	debugMode: null,
+	debugAddItemToStartingInventory: null,
+	debugStartingInventoryItem: null,
 
 	// todo
 	onShowTODO: function() {
@@ -262,7 +275,6 @@ var ui = {
 			}
 
 			var fr = new FileReader();
-			//fr.onloadend = ui.readROMFinished;
 	        fr.onload = function() {
 	        	if (fr.result === null) {
 	        		console.log("error loading rom: file reader result is null");
@@ -337,20 +349,60 @@ var ui = {
 
 	// permanent powerups
 	onPermanentPowerupChanged: function() {
-		if (ui.permanentPowerup.value !== "-1") {
-			ui.ohkoMode.checked = true;
-			ui.ohkoMode.disabled = true;
-		} else {
+		var permanentPowerupValue = parseInt(ui.permanentPowerup.value);
+
+		switch (permanentPowerupValue) {
+			case -1:
+				ui.ohkoMode.checked = false;
+				ui.ohkoMode.disabled = false;
+				ui.infinitePSpeed.checked = false;
+				ui.infinitePSpeed.disabled = false;
+				ui.infinitePSpeed.indeterminate = false;
+			break;
+
+			case 256:
+			case 257:
+				ui.ohkoMode.checked = true;
+				ui.ohkoMode.disabled = true;
+				ui.infinitePSpeed.checked = true;
+				ui.infinitePSpeed.disabled = true;
+				ui.infinitePSpeed.indeterminate = false;
+			break;
+
+			case 258:
+				ui.ohkoMode.checked = true;
+				ui.ohkoMode.disabled = true;
+				ui.infinitePSpeed.checked = false;
+				ui.infinitePSpeed.disabled = true;
+				ui.infinitePSpeed.indeterminate = true;
+			break;
+
+			default: 
+				ui.ohkoMode.checked = true;
+				ui.ohkoMode.disabled = true;
+				ui.infinitePSpeed.checked = false;
+				ui.infinitePSpeed.disabled = false;
+				ui.infinitePSpeed.indeterminate = false;
+			break;
+		}
+
+		if (ui.permanentPowerup.value === "-1") {
 			ui.ohkoMode.checked = false;
 			ui.ohkoMode.disabled = false;
 		}
 
 		if (ui.permanentPowerup.value === "256" || ui.permanentPowerup.value === "257") {
+			ui.ohkoMode.checked = true;
+			ui.ohkoMode.disabled = true;
 			ui.infinitePSpeed.checked = true;
 			ui.infinitePSpeed.disabled = true;
-		} else {
+		}
+
+		if (ui.permanentPowerup.value === "258") {
+			ui.ohkoMode.checked = true;
+			ui.ohkoMode.disabled = true;
 			ui.infinitePSpeed.checked = false;
-			ui.infinitePSpeed.disabled = false;
+			ui.infinitePSpeed.disabled = true;
 		}
 
 		ui.onFlaggableOptionChanged();
@@ -365,122 +417,134 @@ var ui = {
 	},
 
 	onFlaggableOptionChanged: function() {
-		var flags = 0;
+		var flags = [ 0, 0 ];
 
 		if (ui.shuffleRegularStages.checked) {
-			flags |= 1 << 1;
+			flags[0] |= 1 << 0;
 		}
 
 		if (ui.addLostStages.checked) {
-			flags |= 1 << 2;
+			flags[0] |= 1 << 1;
 		}
 
 		if (ui.shuffleFortresses.checked) {
-			flags |= 1 << 3;
+			flags[0] |= 1 << 2;
 		}
 
 		if (ui.shuffleWorld8Ships.checked) {
-			flags |= 1 << 4;
+			flags[0] |= 1 << 3;
 		}
 
 		if (ui.shuffleCastles.checked) {
-			flags |= 1 << 5;
+			flags[0] |= 1 << 4;
 		}
 
 		if (ui.randomizeHammerBroLevels.checked) {
-			flags |= 1 << 6;
+			flags[0] |= 1 << 5;
 		}
 
 		if (ui.removeSomeAutoscrollers.checked) {
-			flags |= 1 << 7;
+			flags[0] |= 1 << 6;
+		}
+
+		if (ui.removeBonusAutoscrollers.checked) {
+			flags[0] |= 1 << 7;
 		}
 
 		if (ui.removeShipAutoscrollers.checked) {
-			flags |= 1 << 8;
+			flags[0] |= 1 << 8;
 		}
 
 		if (ui.shuffleOverworldPipes.checked) {
-			flags |= 1 << 9;
+			flags[0] |= 1 << 9;
 		}
 
 		if (ui.shuffleWorldOrder.checked) {
-			flags |= 1 << 10;
+			flags[0] |= 1 << 10;
 		}
 
 		if (ui.shuffleWarpZones.checked) {
-			flags |= 1 << 11;
+			flags[0] |= 1 << 11;
+		}
+
+		if (ui.shuffleWorldPalettes.checked) {
+			flags[0] |= 1 << 12;
+		}
+
+		if (ui.randomizeWorldPalettes.checked) {
+			flags[0] |= 1 << 13;
 		}
 
 		if (ui.randomizeEnemies.checked) {
-			flags |= 1 << 12;
+			flags[0] |= 1 << 14;
 		}
 
 		if (ui.randomizeKoopaEarthquakes.checked) {
-			flags |= 1 << 13;
+			flags[0] |= 1 << 15;
 		}
 
 		if (ui.randomizeKoopaKidHP.checked) {
-			flags |= 1 << 14;
+			flags[0] |= 1 << 16;
 		}
 
 		if (ui.randomizeHammerBros.checked) {
-			flags |= 1 << 15;
+			flags[0] |= 1 << 17;
 		}
 
 		if (ui.shuffleNGame.checked) {
-			flags |= 1 << 16;
+			flags[0] |= 1 << 18;
 		}
 
 		if (ui.shuffleNGamePrizes.checked) {
-			flags |= 1 << 17;
+			flags[0] |= 1 << 19;
 		}
 
 		if (ui.randomizeCastleItems.checked) {
-			flags |= 1 << 18;
+			flags[0] |= 1 << 20;
 		}
 
 		if (ui.randomizeAnchorAbility.checked) {
-			flags |= 1 << 19;
+			flags[0] |= 1 << 21;
 		}
 
 		if (ui.randomizeItemBlocks.checked) {
-			flags |= 1 << 20;
+			flags[0] |= 1 << 22;
 		}
 
 		if (ui.removeWarpWhistles.checked) {
-			flags |= 1 << 21;
+			flags[0] |= 1 << 23;
 		}
 
 		if (ui.shuffleChestItems.checked) {
-			flags |= 1 << 22;
+			flags[0] |= 1 << 24;
 		}
 
 		if (ui.shuffleToadHouses.checked) {
-			flags |= 1 << 23;
+			flags[0] |= 1 << 25;
 		}
 
 		if (ui.letHammerBreakLocks.checked) {
-			flags |= 1 << 24;
+			flags[0] |= 1 << 26;
 		}
 
 		if (ui.randomizeMusic.checked) {
-			flags |= 1 << 25;
+			flags[0] |= 1 << 27;
 		}
 
 		if (ui.shuffleSfx.checked) {
-			flags |= 1 << 26;
+			flags[0] |= 1 << 28;
 		}
 
 		if (ui.ohkoMode.checked) {
-			flags |= 1 << 27;
+			flags[0] |= 1 << 29;
 		}
 
 		if (ui.alwaysRevertToSmall.checked) {
-			flags |= 1 << 28;
+			flags[0] |= 1 << 30;
 		}
 
 		if (ui.infinitePSpeed.checked) {
-			flags |= 1 << 29;
+			flags[0] |= 1 << 31;
 		}
 
 		var changedStartingLives = false;
@@ -493,14 +557,14 @@ var ui = {
 			changedMarioColor = true;
 		}
 
-		if (flags === 0) {
+		if (flags[0] === 0 && flags[1] === 0) {
 			ui.flagsInput.value = "";
 
 			if (!changedStartingLives && !changedMarioColor) {
 				false;
 			}
 		} else {
-			var flagStr = btoa(flags.toString());
+			var flagStr = btoa(flags[0].toString() + " " + flags[1].toString());
 			ui.flagsInput.value = flagStr;
 		}
 
@@ -508,10 +572,6 @@ var ui = {
 	},
 
 	onFlagsChanged: function() {
-		//if (ui.flagsInput.value === "") {
-		//	return;
-		//}
-
 		var flags;
 		try {
 			flags = atob(ui.flagsInput.value);
@@ -519,181 +579,203 @@ var ui = {
 			return false;
 		}
 
-		var flags = parseInt(atob(ui.flagsInput.value));
+		var flagsStr = atob(ui.flagsInput.value).split(' ');
+		var flags = [ parseInt(flagsStr[0]), parseInt(flagsStr[1]) ];
+
+		console.log("flags[0]: " + flags[0]);
+		console.log("flags[1]: " + flags[1]);
 
 		for (var i = 0; i < ui.flaggableOptions.length; i++) {
 			ui.flaggableOptions[i].checked = false;
 		}
 		
-		if (flags & (1 << 1)) {
+		if (flags[0] & (1 << 0)) {
 			if (!ui.shuffleRegularStages.disabled) {
 				ui.shuffleRegularStages.checked = true;
 			}
 		}
 
-		if (flags & (1 << 2)) {
+		if (flags[0] & (1 << 1)) {
 			if (!ui.addLostStages.disabled) {
 				ui.addLostStages.checked = true;
 			}
 		}
 
-		if (flags & (1 << 3)) {
+		if (flags[0] & (1 << 2)) {
 			if (!ui.shuffleFortresses.disabled) {
 				ui.shuffleFortresses.checked = true;
 			}
 		}
 
-		if (flags & (1 << 4)) {
+		if (flags[0] & (1 << 3)) {
 			if (!ui.shuffleWorld8Ships.disabled) {
 				ui.shuffleWorld8Ships.checked = true;
 			}
 		}
 
-		if (flags & (1 << 5)) {
+		if (flags[0] & (1 << 4)) {
 			if (!ui.shuffleCastles.disabled) {
 				ui.shuffleCastles.checked = true;
 			}
 		}
 
-		if (flags & (1 << 6)) {
+		if (flags[0] & (1 << 5)) {
 			if (!ui.randomizeHammerBroLevels.disabled) {
 				ui.randomizeHammerBroLevels.checked = true;
 			}
 		}
 
-		if (flags & (1 << 7)) {
+		if (flags[0] & (1 << 6)) {
 			if (!ui.removeSomeAutoscrollers.disabled) {
 				ui.removeSomeAutoscrollers.checked = true;
 			}
 		}
 
-		if (flags & (1 << 8)) {
+		if (flags[0] & (1 << 7)) {
+			if (!ui.removeBonusAutoscrollers.disabled) {
+				ui.removeBonusAutoscrollers.checked = true;
+			}
+		}
+
+		if (flags[0] & (1 << 8)) {
 			if (!ui.removeShipAutoscrollers.disabled) {
 				ui.removeShipAutoscrollers.checked = true;
 			}
 		}
 
-		if (flags & (1 << 9)) {
+		if (flags[0] & (1 << 9)) {
 			if (!ui.shuffleOverworldPipes.disabled) {
 				ui.shuffleOverworldPipes.checked = true;
 			}
 		}
 
-		if (flags & (1 << 10)) {
+		if (flags[0] & (1 << 10)) {
 			if (!ui.shuffleWorldOrder.disabled) {
 				ui.shuffleWorldOrder.checked = true;
 			}
 		}
 
-		if (flags & (1 << 11)) {
+		if (flags[0] & (1 << 11)) {
 			if (!ui.shuffleWarpZones.disabled) {
 				ui.shuffleWarpZones.checked = true;
 			}
 		}
 
-		if (flags & (1 << 12)) {
+		if (flags[0] & (1 << 12)) {
+			if (!ui.shuffleWorldPalettes.disabled) {
+				ui.shuffleWorldPalettes.checked = true;
+			}
+		}
+
+		if (flags[0] & (1 << 13)) {
+			if (!ui.randomizeWorldPalettes.disabled) {
+				ui.randomizeWorldPalettes.checked = true;
+			}
+		}
+
+		if (flags[0] & (1 << 14)) {
 			if (!ui.randomizeEnemies.disabled) {
 				ui.randomizeEnemies.checked = true;
 			}
 		}
 
-		if (flags & (1 << 13)) {
+		if (flags[0] & (1 << 15)) {
 			if (!ui.randomizeKoopaEarthquakes.disabled) {
 				ui.randomizeKoopaEarthquakes.checked = true;
 			}
 		}
 
-		if (flags & (1 << 14)) {
+		if (flags[0] & (1 << 16)) {
 			if (!ui.randomizeKoopaKidHP.disabled) {
 				ui.randomizeKoopaKidHP.checked = true;
 			}
 		}
 
-		if (flags & (1 << 15)) {
+		if (flags[0] & (1 << 17)) {
 			if (!ui.randomizeHammerBros.disabled) {
 				ui.randomizeHammerBros.checked = true;
 			}
 		}
 
-		if (flags & (1 << 16)) {
+		if (flags[0] & (1 << 18)) {
 			if (!ui.shuffleNGame.disabled) {
 				ui.shuffleNGame.checked = true;
 			}
 		}
 
-		if (flags & (1 << 17)) {
+		if (flags[0] & (1 << 19)) {
 			if (!ui.shuffleNGamePrizes.disabled) {
 				ui.shuffleNGamePrizes.checked = true;
 			}
 		}
 
-		if (flags & (1 << 18)) {
+		if (flags[0] & (1 << 20)) {
 			if (!ui.randomizeCastleItems.disabled) {
 				ui.randomizeCastleItems.checked = true;
 			}
 		}
 
-		if (flags & (1 << 19)) {
+		if (flags[0] & (1 << 21)) {
 			if (!ui.randomizeAnchorAbility.disabled) {
 				ui.randomizeAnchorAbility.checked = true;
 			}
 		}
 
-		if (flags & (1 << 20)) {
+		if (flags[0] & (1 << 22)) {
 			if (!ui.randomizeItemBlocks.disabled) {
 				ui.randomizeItemBlocks.checked = true;
 			}
 		}
 
-		if (flags & (1 << 21)) {
+		if (flags[0] & (1 << 23)) {
 			if (!ui.removeWarpWhistles.disabled) {
 				ui.removeWarpWhistles.checked = true;
 			}
 		}
 
-		if (flags & (1 << 22)) {
+		if (flags[0] & (1 << 24)) {
 			if (!ui.shuffleChestItems.disabled) {
 				ui.shuffleChestItems.checked = true;
 			}
 		}
 
-		if (flags & (1 << 23)) {
+		if (flags[0] & (1 << 25)) {
 			if (!ui.shuffleToadHouses.disabled) {
 				ui.shuffleToadHouses.checked = true;
 			}
 		}
 
-		if (flags & (1 << 24)) {
+		if (flags[0] & (1 << 26)) {
 			if (!ui.letHammerBreakLocks.disabled) {
 				ui.letHammerBreakLocks.checked = true;
 			}
 		}
 
-		if (flags & (1 << 25)) {
+		if (flags[0] & (1 << 27)) {
 			if (!ui.randomizeMusic.disabled) {
 				ui.randomizeMusic.checked = true;
 			}
 		}
 
-		if (flags & (1 << 26)) {
+		if (flags[0] & (1 << 28)) {
 			if (!ui.shuffleSfx.disabled) {
 				ui.shuffleSfx.checked = true;
 			}
 		}
 
-		if (flags & (1 << 27)) {
+		if (flags[0] & (1 << 29)) {
 			if (!ui.ohkoMode.disabled) {
 				ui.ohkoMode.checked = true;
 			}
 		}
 
-		if (flags & (1 << 28)) {
+		if (flags[0] & (1 << 30)) {
 			if (!ui.alwaysRevertToSmall.disabled) {
 				ui.alwaysRevertToSmall.checked = true;
 			}
 		}
 
-		if (flags & (1 << 29)) {
+		if (flags[0] & (1 << 31)) {
 			if (!ui.infinitePSpeed.disabled) {
 				ui.infinitePSpeed.checked = true;
 			}
@@ -754,6 +836,7 @@ var ui = {
 	onAnyOptionChanged: function() {
 		if (ui.fileInputFilename.value !== "") {
 			ui.setGenerationStatus("Ready", "#007F00");
+			ui.generateRom.disabled = false;
 		}
 	},
 
@@ -785,6 +868,45 @@ var ui = {
 			ui.randomizedFile, 
 			outputName, 
 			"application/" + ui.selectedFileExtOutput
+		);
+	},
+
+	onLoadConfigSelected: function(config) {
+		config.apply(ui);
+
+		ui.useDeathCounter.disabled = !ui.infiniteLives.checked;
+		ui.onFlaggableOptionChanged();
+		ui.onPermanentPowerupChanged();
+	},
+
+	onLoadConfigSelect: function(evt) {
+		var fileList = evt.target.files;
+
+		var fr = new FileReader();
+        fr.onload = function() {
+        	if (fr.result === null) {
+        		console.log("error loading rom: file reader result is null");
+        		return;
+        	}
+
+        	var buffer = new Uint8Array(fr.result);
+
+        	// read data from config file
+        	var config = new Configuration(buffer);
+
+        	ui.onLoadConfigSelected(config);
+        };
+        fr.readAsArrayBuffer(fileList[0]);
+	},
+
+	onSaveConfig: function() {
+		var config = new Configuration();
+		config.load(ui);
+
+		downloadBlob(
+			JSON.stringify(config, null, '\t'),
+			"smb3wr-config.json", 
+			"application/json"
 		);
 	},
 
@@ -884,6 +1006,16 @@ var ui = {
 			ui.onAnyOptionChanged();
 		});
 
+		ui.debugMode.addEventListener("click", function() { 
+			ui.onAnyOptionChanged();
+		});
+		ui.debugAddItemToStartingInventory.addEventListener("click", function() { 
+			ui.onAnyOptionChanged();
+		});
+		ui.debugStartingInventoryItem.addEventListener("change", function() { 
+			ui.onAnyOptionChanged();
+		});
+
 		ui.flagsInput.addEventListener("input", function() { 
 			ui.onFlagsChanged();
 		});
@@ -947,7 +1079,7 @@ var ui = {
 
 		for (var i = 0; i < ui.worldLetterTextEditor.length; i++) {
 			ui.worldLetterTextEditor[i].maxLength = rom.worldLetterTextLength[i]-1;
-			ui.setWorldLetterText(i, ui.defaultWorldLetterText[i]);
+			
 			let index = i;
 			ui.worldLetterTextEditor[i].addEventListener("keyup", function() { 
 				this.value = this.value.replace(mainTextRegExp, '');
@@ -959,7 +1091,6 @@ var ui = {
 		}
 
 		ui.finalLetterTextEditor.maxLength = rom.finalLetterTextLength-1;
-		ui.setFinalLetterText(rom.defaultFinalLetterText);
 		ui.finalLetterTextEditor.addEventListener("keyup", function() { 
 			this.value = this.value.replace(mainTextRegExp, '');
 			rom.loadedFinalLetterText = this.value;
@@ -989,18 +1120,28 @@ var ui = {
 					ui.spoilerLog.scrollTop = 0;
 					ui.saveRom.disabled = false;
 					ui.setGenerationStatus("Done", "#007F00");
+					ui.generateRom.disabled = true;
 					ui.lastGenerated.innerHTML = ui.selectedFileNameOutput + "-" + ui.seedInput.value + 
 						((ui.flagsInput.value !== "") ? "-" : "") + encodeURIComponent(ui.flagsInput.value);
 					ui.onShowSpoilerLog();
 				} else {
 					alert("Nothing to randomize");
 					ui.setGenerationStatus("Ready", "#007F00");
+					ui.generateRom.disabled = false;
 				}
 			}, 250);
 		});
 
 		ui.saveRom.addEventListener("click", function() {
 			ui.onSaveROM();
+		});
+		ui.loadConfigInput.addEventListener("change", ui.onLoadConfigSelect, false);
+		ui.loadConfig.addEventListener("click", function() {
+			ui.loadConfigInput.click();
+		});
+
+		ui.saveConfig.addEventListener("click", function() {
+			ui.onSaveConfig();
 		});
 
 		ui.showSpoilerLog.addEventListener("change", function() { 
@@ -1025,6 +1166,12 @@ var ui = {
 		ui.setGeneralToadHouseText(ui.defaultToadHouseText[ToadHouseType.General]);
 		ui.setWhistleToadHouseText(ui.defaultToadHouseText[ToadHouseType.Whistle]);
 		ui.setStrangeToadHouseText(ui.defaultToadHouseText[ToadHouseType.Strange]);
+
+		for (var i = 0; i < ui.defaultWorldLetterText.length; i++) {
+			ui.setWorldLetterText(i, ui.defaultWorldLetterText[i]);
+		}
+
+		ui.setFinalLetterText(ui.defaultFinalLetterText);
 
 		if (ui.showChangelog.checked) {
 			ui.onShowChangelog();
@@ -1070,6 +1217,18 @@ var ui = {
 		// dont store this, its only used to show the page when javascript is working
 		document.getElementById("javascript-enabled").style.display = "block";
 
+		// dont store this either, it simply checks for "debug=true" in uri parameters
+		var debugURI = new URL(window.location.href).searchParams.get("debug");
+		if (debugURI) {
+			// then shows debug options
+			document.getElementById("debug-tab").style.display = "block";
+		}
+
+		// store these because the randomizer needs to know if debug options are enabled
+		ui.debugMode = document.getElementById("debug-mode");
+		ui.debugAddItemToStartingInventory = document.getElementById("debug-add-item-to-starting-inventory");
+		ui.debugStartingInventoryItem = document.getElementById("starting-inventory-item");
+
 		// store ui elements
 		ui.headerCanvas = document.getElementById("header-canvas");
 
@@ -1112,9 +1271,11 @@ var ui = {
 
 		ui.worldLetterTextEditor = document.getElementsByClassName("world-letter-text-editor");
 		ui.worldLetterTextDefaultButton  = document.getElementsByClassName("world-letter-text-default");
+
 		ui.finalLetterTextEditor = document.getElementById("final-letter-text-editor");
 		ui.finalLetterTextDefaultButton  = document.getElementById("final-letter-text-default");
 
+		ui.tabBar = document.getElementById("tab-bar");
 		ui.tabButtons = document.getElementsByClassName("tab");
 		ui.tabContent = document.getElementsByClassName("tab-content");
 
@@ -1125,10 +1286,13 @@ var ui = {
 		ui.shuffleCastles = document.getElementById("shuffle-castles");
 		ui.randomizeHammerBroLevels = document.getElementById("random-hammer-bros-levels");
 		ui.removeSomeAutoscrollers = document.getElementById("remove-some-autoscrollers");
+		ui.removeBonusAutoscrollers = document.getElementById("remove-bonus-autoscrollers");
 		ui.removeShipAutoscrollers = document.getElementById("remove-ship-autoscrollers");
 		ui.shuffleOverworldPipes = document.getElementById("shuffle-overworld-pipes");
 		ui.shuffleWorldOrder = document.getElementById("shuffle-world-order");
 		ui.shuffleWarpZones = document.getElementById("shuffle-warp-zones");
+		ui.shuffleWorldPalettes = document.getElementById("shuffle-world-palettes");
+		ui.randomizeWorldPalettes = document.getElementById("randomize-world-palettes");
 
 		ui.randomizeEnemies = document.getElementById("randomize-enemies");
 		ui.randomizeKoopaEarthquakes = document.getElementById("randomize-koopa-earthquakes");
@@ -1154,6 +1318,9 @@ var ui = {
 		ui.generateRom = document.getElementById("generate-rom");
 		ui.lastGenerated = document.getElementById("last-generated");
 		ui.saveRom = document.getElementById("save-rom");
+		ui.loadConfig = document.getElementById("load-config");
+		ui.loadConfigInput = document.getElementById("load-config-input");
+		ui.saveConfig = document.getElementById("save-config");
 		ui.generationStatus = document.getElementById("generation-status");
 		ui.generateSpoilers = document.getElementById("generate-spoilers");
 

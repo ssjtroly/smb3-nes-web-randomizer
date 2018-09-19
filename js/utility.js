@@ -11,8 +11,8 @@ String.prototype.split = function(size) {
 	return target.match(re);
 }
 
-function mod(x, m) {
-    return (x%m + m)%m;
+function wrap(value, lower, upper) {
+	return (value-lower)%(upper-lower)
 }
 
 function getRandomInt(max) {
@@ -41,11 +41,32 @@ function bigToLittleBytesEndian(num) {
 	return [ num & 0x0F, num & 0xF0 ];
 }
 
-function eraseArrayElement(arr, index) {
-	var first = arr.slice(0, index);
-	var second = arr.slice(index+1);
-	arr = first.concat(second);
-}
+var conversion = {
+	one: {
+		to2D: function(i, width) {
+			return { x: Math.floor(i%width), y: Math.floor(i/width) };
+		},
+		to3D: function(i, width, height) {
+			return { x: Math.floor(i%width), y: Math.floor((i/width)%height), z: Math.floor(i/(width*height)) };
+		},
+	},
+	two: {
+		to1D: function(x, y, width) {
+			return Math.floor(y * width + x);
+		},
+		XYto1D: function(xy, width) {
+			return Math.floor(xy.y * width + xy.x);
+		},
+	},
+	three: {
+		to1D: function(x, y, z, width, height) {
+			return Math.floor(x + y * width + z * width * height);
+		},
+		XYZto1D: function(xyz, width, height) {
+			return Math.floor(xyz.x + xyz.y * width + xyz.z * width * height);
+		},
+	}
+};
 
 var downloadURL = function(data, fileName) {
 	var a;

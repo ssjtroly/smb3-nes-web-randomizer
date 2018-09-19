@@ -7,7 +7,9 @@ function writeMapLevelPointers(ROM, oldWorldData, oldLevel, newWorldData, newLev
 
 	// not sure what this does but appears to have something 
 	// to do with the location of the level on the world map
-	// shuffling this value will make some levels appear as hammer bro stages
+	// shuffling this value will make some levels appear as
+	// hammer bro stages without enemies (i.e. empty tiles
+	// where hammer bros can march to but there is no hammer bro)
 	//var vanillaV2 = oldWorldData.data[1][oldLevel.mapOffset];
 	//var randomV2 = newWorldData.data[1][newLevel.mapOffset];
 	//ROM[oldWorldData.dataPointer[1][oldLevel.mapOffset]] = vanillaV2;
