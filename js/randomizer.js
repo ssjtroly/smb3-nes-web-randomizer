@@ -8,7 +8,7 @@ var randomizer = {
 		}
 
 		var changedDebugMode = false;
-		if (ui.debugEnableDebugMode.checked) {
+		if (ui.debugMode.checked) {
 			DEBUG_enableDebugMode(ROM);
 			changedDebugMode = true;
 		}
