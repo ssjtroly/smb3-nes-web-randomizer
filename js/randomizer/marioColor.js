@@ -184,70 +184,91 @@ function setMarioColor(ROM, marioColor, marioComplexion) {
 		// use black for overalls because thats how it is in gameplay, not blue like vanilla
 		ROM[rom.luigiColorBonusGamePointer+7] = 0x0F;
 
-		// have no idea what "judgems" means, but apparently its the cloud that skips levels
-		ROM[rom.marioColorMapJudgemsPointer+1] = normalColors[0][0];
-		ROM[rom.marioColorMapJudgemsPointer+2] = normalColors[0][1];
+		//ROM[rom.marioColorMapJudgemsPointer+0] = normalColors[0][0];
+		ROM[rom.marioColorMapJudgemsPointer+1] = normalColors[0][1];
+		ROM[rom.marioColorMapJudgemsPointer+2] = normalColors[0][0];
+		//ROM[rom.marioColorMapJudgemsPointer+3] = normalColors[0][1];
 
-		// in map colors, all shared between mario and luigi 
-		// but will use PaletteFix to change primary color
-		ROM[rom.marioMapPaletteFix] = normalColors[0][0];
-		ROM[rom.luigiMapPaletteFix] = normalColors[1][0];
-		ROM[rom.marioMapPalettePostFix] = normalColors[0][0];
-		ROM[rom.luigiMapPalettePostFix] = normalColors[1][0];
+		ROM[rom.marioColorMapInvUseSmallPointer] = normalColors[0][0];
+		ROM[rom.marioColorMapInvUseSmallPointer+1] = normalColors[0][1];
+		ROM[rom.marioColorMapInvUseBigPointer] = normalColors[0][0];
+		ROM[rom.marioColorMapInvUseBigPointer+1] = normalColors[0][1];
+		ROM[rom.marioColorMapInvUseLeafPointer] = normalColors[0][0];
+		ROM[rom.marioColorMapInvUseLeafPointer+1] = normalColors[0][1];
+		ROM[rom.marioColorMapInvUseFirePointer] = fireColors[0];
+		ROM[rom.marioColorMapInvUseFirePointer+1] = fireColors[1];
+		ROM[rom.marioColorMapInvUseFrogPointer] = frogColors[0];
+		ROM[rom.marioColorMapInvUseFrogPointer+1] = frogColors[1];
+		ROM[rom.marioColorMapInvUseTanookiPointer] = tanookiColors[0];
+		ROM[rom.marioColorMapInvUseTanookiPointer+1] = tanookiColors[1];
+		ROM[rom.marioColorMapInvUseHammerPointer] = hammerColors[0];
+		ROM[rom.marioColorMapInvUseHammerPointer+1] = hammerColors[1];
+		ROM[rom.marioColorMapInvUseCloudPointer] = normalColors[0][0];
+		ROM[rom.marioColorMapInvUseCloudPointer+1] = normalColors[0][1];
+		ROM[rom.marioColorMapInvUsePWingPointer] = normalColors[0][0];
+		ROM[rom.marioColorMapInvUsePWingPointer+1] = normalColors[0][1];
 
-		ROM[rom.marioMapPaletteFixValuePointer] = normalColors[0][0];
+		ROM[rom.luigiColorMapInvUseSmallPointer] = normalColors[1][0];
+		ROM[rom.luigiColorMapInvUseSmallPointer+1] = normalColors[1][1];
+		ROM[rom.luigiColorMapInvUseBigPointer] = normalColors[1][0];
+		ROM[rom.luigiColorMapInvUseBigPointer+1] = normalColors[1][1];
+		ROM[rom.luigiColorMapInvUseLeafPointer] = normalColors[1][0];
+		ROM[rom.luigiColorMapInvUseLeafPointer+1] = normalColors[1][1];
+		ROM[rom.luigiColorMapInvUseFirePointer] = fireColors[0];
+		ROM[rom.luigiColorMapInvUseFirePointer+1] = fireColors[1];
+		ROM[rom.luigiColorMapInvUseFrogPointer] = frogColors[0];
+		ROM[rom.luigiColorMapInvUseFrogPointer+1] = frogColors[1];
+		ROM[rom.luigiColorMapInvUseTanookiPointer] = tanookiColors[0];
+		ROM[rom.luigiColorMapInvUseTanookiPointer+1] = tanookiColors[1];
+		ROM[rom.luigiColorMapInvUseHammerPointer] = hammerColors[0];
+		ROM[rom.luigiColorMapInvUseHammerPointer+1] = hammerColors[1];
+		ROM[rom.luigiColorMapInvUseCloudPointer] = normalColors[1][0];
+		ROM[rom.luigiColorMapInvUseCloudPointer+1] = normalColors[1][1];
+		ROM[rom.luigiColorMapInvUsePWingPointer] = normalColors[1][0];
+		ROM[rom.luigiColorMapInvUsePWingPointer+1] = normalColors[1][1];
 
-		// this seems to overwrite mario's color to 0x16 (default) no matter the value
-		// found in PRG010.asm
-		// 		; Get the color we need to patch in...
-		// 		LDA Map_PostJC_PUpPP1,Y
-		// 		CMP #$16	; rom.marioMapPaletteFixValue2Pointer
-		// 		BNE PRG010_CE54	 	; If color <> $16 (Mario's red), jump to PRG010_CE54
-		//ROM[rom.marioMapPaletteFixValue2Pointer] = normalColors[0][0];
+		// REMOVED MARIO/LUGI PALETTE CORRECTION STUFF BECAUSE IT WAS A MESS!!!
+		// there was something i am missing or i was going about it all wrong, need to look deeper into it
+		// luigi gets shafted again
 
 		ROM[rom.marioColorMapSmallPointer+1] = normalColors[0][0];
 		ROM[rom.marioColorMapSmallPointer+2] = normalColors[0][1];
-
 		ROM[rom.marioColorMapBigPointer+1] = normalColors[0][0];
 		ROM[rom.marioColorMapBigPointer+2] = normalColors[0][1];
-
 		ROM[rom.marioColorMapLeafPointer+1] = normalColors[0][0];
 		ROM[rom.marioColorMapLeafPointer+2] = normalColors[0][1];
 
-		// lines below are commented out because they make the player sprite turn solid grey
-		//ROM[rom.marioColorMapFirePointer+1] = fireColors[0][0];
-		//ROM[rom.marioColorMapFirePointer+2] = fireColors[0][1];
-		//ROM[rom.marioColorMapFirePointer+3] = ROM[rom.marioColorFirePointer+3];
+		// these were solid grey because the values assigned were undefined, oops
+		ROM[rom.marioColorMapFirePointer+1] = fireColors[0];
+		ROM[rom.marioColorMapFirePointer+2] = fireColors[1];
+		ROM[rom.marioColorMapFrogPointer+1] = frogColors[0];
+		ROM[rom.marioColorMapFrogPointer+2] = frogColors[1];
+		ROM[rom.marioColorMapTanookiPointer+1] = tanookiColors[0];
+		ROM[rom.marioColorMapTanookiPointer+2] = tanookiColors[1];
+		ROM[rom.marioColorMapHammerPointer+1] = hammerColors[0];
+		ROM[rom.marioColorMapHammerPointer+2] = hammerColors[1];
+		ROM[rom.marioColorMapPWingPointer+1] = normalColors[0];
+		ROM[rom.marioColorMapPWingPointer+2] = normalColors[1];
+		ROM[rom.marioColorMapJudgemsPointer+1] + normalColors[0];
+		ROM[rom.marioColorMapJudgemsPointer+2] + normalColors[1];
 
-		//ROM[rom.marioColorMapFrogPointer+1] = frogColors[0][0];
-		//ROM[rom.marioColorMapFrogPointer+2] = frogColors[0][1];
-
-		//ROM[rom.marioColorMapTanookiPointer+1] = tanookiColors[0][0];
-		//ROM[rom.marioColorMapTanookiPointer+2] = tanookiColors[0][1];
-
-		//ROM[rom.marioColorMapHammerPointer+1] = hammerColors[0][0];
-		//ROM[rom.marioColorMapHammerPointer+2] = hammerColors[0][1];
-
-		ROM[rom.marioColorMapPWingPointer+1] = normalColors[0][0];
-		ROM[rom.marioColorMapPWingPointer+2] = normalColors[0][1];
-
+		// palette correction when cloud ends
 		// these are primary colors
-		ROM[rom.marioColorMapPowerUpPost1Pointer] = normalColors[0][0];
-		ROM[rom.marioColorMapPowerUpPost1Pointer+1] = normalColors[0][0];
-		//ROM[rom.marioColorMapPowerUpPost1Pointer+2] = fireColors[0][0];
-		ROM[rom.marioColorMapPowerUpPost1Pointer+3] = normalColors[0][0];
-		//ROM[rom.marioColorMapPowerUpPost1Pointer+4] = frogColors[0][0];
-		//ROM[rom.marioColorMapPowerUpPost1Pointer+5] = tanookiColors[0][0];
-		//ROM[rom.marioColorMapPowerUpPost1Pointer+6] = hammerColors[0][0];
-
+		ROM[rom.marioColorMapCloudPostPrimaryPointer] = normalColors[0][0];
+		ROM[rom.marioColorMapCloudPostPrimaryPointer+1] = normalColors[0][0];
+		ROM[rom.marioColorMapCloudPostPrimaryPointer+2] = fireColors[0];
+		ROM[rom.marioColorMapCloudPostPrimaryPointer+3] = normalColors[0];
+		ROM[rom.marioColorMapCloudPostPrimaryPointer+4] = frogColors[0];
+		ROM[rom.marioColorMapCloudPostPrimaryPointer+5] = tanookiColors[0];
+		ROM[rom.marioColorMapCloudPostPrimaryPointer+6] = hammerColors[0];
 		// these are outline colors
-		//ROM[rom.marioColorMapPowerUpPost2Pointer] = 0x0F;
-		//ROM[rom.marioColorMapPowerUpPost2Pointer+1] = 0x0F;
-		//ROM[rom.marioColorMapPowerUpPost2Pointer+2] = 0x16;
-		//ROM[rom.marioColorMapPowerUpPost2Pointer+3] = 0x0F;
-		//ROM[rom.marioColorMapPowerUpPost2Pointer+4] = 0x0F;
-		//ROM[rom.marioColorMapPowerUpPost2Pointer+5] = 0x0F;
-		//ROM[rom.marioColorMapPowerUpPost2Pointer+6] = 0x0F;
+		//ROM[rom.marioColorMapCloudPostOutlinePointer] = 0x0F;
+		//ROM[rom.marioColorMapCloudPostOutlinePointer+1] = 0x0F;
+		//ROM[rom.marioColorMapCloudPostOutlinePointer+2] = 0x16;
+		//ROM[rom.marioColorMapCloudPostOutlinePointer+3] = 0x0F;
+		//ROM[rom.marioColorMapCloudPostOutlinePointer+4] = 0x0F;
+		//ROM[rom.marioColorMapCloudPostOutlinePointer+5] = 0x0F;
+		//ROM[rom.marioColorMapCloudPostOutlinePointer+6] = 0x0F;
 
 		ui.addSpoiler("Randomized Mario Colors");
 		ui.addSpoiler("&#9;Mario Small/Big/Leaf Colors > " + rgbToName(lookupNESRGB(normalColors[0][0])) + ", " + rgbToName(lookupNESRGB(normalColors[0][1])));

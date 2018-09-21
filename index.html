@@ -366,7 +366,7 @@
 		<button class="tab">Enemies</button>
 		<button class="tab">Items</button>
 		<button class="tab">Miscellaneous</button>
-		<button id="debug-tab" class="tab" hidden>DEBUG</button>
+		<button class="debug tab">DEBUG</button>
 	</div>
 	<!-- end tabbed option list -->
 
@@ -652,7 +652,7 @@
 	<!-- end misc tab -->
 
 	<!-- start DEBUG tab -->
-	<div class="tab-content" id="debug-tab" hidden>
+	<div class="debug tab-content" id="debug-tab">
 
 		<label class="option-label">
 			<div class="tooltip tab-child-checkbox">
@@ -694,7 +694,8 @@
 	<!-- start rom input -->
 	ROM<br><input type="file" id="file-input" accept=".nes" />
 	<input type="text" id="file-input-filename" readonly/><br>
-	<input type="button" id="file-input-browse" value="Browse" /><br>
+	<input type="button" id="file-input-browse" value="Browse" />
+	<input class="debug" type="button" id="file-input-reload" value="Reload" disabled /><br>
 	<!-- end rom input -->
 
 	<div><!-- start hiding save/load config (NOT IMPLEMENTED) -->

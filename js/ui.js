@@ -13,16 +13,14 @@ var ui = {
 		{ date: new Date("2018-9-7"), text: "Implemented Mario colors." },
 		{ date: new Date("2018-9-5"), text: "Stole independent Koopaling HP hack." },
 		{ date: new Date("2018-8-29"), text: "Implemented regular stage shuffle." },
-		{ date: new Date("2018-8-28"), text: "Implemented enemy randomizer, but needs improvment. There are still a few incompatibilities that can occur and logical placement needs to be done)" },
+		{ date: new Date("2018-8-28"), text: "Implemented enemy randomizer, but needs improvment. There are still a few incompatibilities that can occur and logical placement needs to be done." },
 		//{ date: new Date("2018-8-26"), text: "Added text editors for letters from Peach/Bowser at beginning of worlds" },
 		//{ date: new Date("2018-8-25"), text: "Added text editors for Toad houses" },
 		{ date: new Date("2018-8-24"), text: "Started this project." },
 	],
 
 	bugsEntry: [
-		"Colors for fire, frog, tanooki and hammer suit arent used on the world map<br>" +
-		"Colors set in PRG027's InitPals_Per_MapPUp<br>" +
-		"Also note they agree with Map_PostJC_PUpPP1/2 in PRG010"
+		
 	],
 
 	defaultToadHouseText: [
@@ -86,10 +84,8 @@ var ui = {
 
 	fileInput: null,
 	fileInputBrowse: null,
-	fileInputFilename: null,
-	selectedFileOutput: null,
-	selectedFileExtOutput: "",
-	selectedFileNameOutput: "",
+	fileInputReload: null,
+	fileInputObject: null,
 	seedInput: null,
 	randomizeSeed: null,
 	marioColor: null,
@@ -259,37 +255,43 @@ var ui = {
 	onFileSelected: function() {
 		ui.generateRom.disabled = ui.fileInputFilename.value !== "" ? false : true;
 		ui.generateSpoilers.disabled = ui.generateRom.disabled;
+		ui.fileInputReload.disabled = false;
 		ui.onAnyOptionChanged();
+	},
+
+	readSelectedFile: function() {
+		var fr = new FileReader();
+        fr.onload = function() {
+        	if (fr.result === null) {
+        		alert("Error Loading ROM: File reader result is null.");
+        		ui.fileInputFilename.value = "";
+        		return;
+        	}
+
+        	ui.loadedFile = new Uint8Array(fr.result);
+
+        	// reads data from selected ROM file
+        	ui.onReadFromROM(ui.loadedFile);
+
+        	ui.onFileSelected();
+        };
+        fr.readAsArrayBuffer(ui.fileInputObject);
 	},
 
 	onFileSelect: function(evt) {
 		var fileList = evt.target.files;
+		ui.fileInputObject = fileList[0];
 
 		if (fileList.length > 0) {
-			ui.selectedFileOutput = fileList[0].name;
-			var lastDot = ui.selectedFileOutput.lastIndexOf('.');
-			if (lastDot !== -1) {
-				ui.selectedFileExtOutput = ui.selectedFileOutput.slice(lastDot, ui.selectedFileOutput.length);
-				ui.selectedFileNameOutput = ui.selectedFileOutput.slice(0, lastDot);
-				ui.fileInputFilename.value = fileList[0].name;
-			}
-
-			var fr = new FileReader();
-	        fr.onload = function() {
-	        	if (fr.result === null) {
-	        		console.log("error loading rom: file reader result is null");
-	        		return;
-	        	}
-
-	        	ui.loadedFile = new Uint8Array(fr.result);
-
-	        	// reads data from selected ROM file
-	        	ui.onReadFromROM(ui.loadedFile);
-
-	        	ui.onFileSelected();
-	        };
-	        fr.readAsArrayBuffer(fileList[0]);
+			ui.fileInputFilename.value = ui.fileInputObject.name;
+			ui.readSelectedFile();
 		}
+	},
+
+	onFileReload: function() {
+		ui.loadedFile = null;
+		ui.readSelectedFile();
+		ui.onAnyOptionChanged();
 	},
 
 	onReadFromROM: function(romFile) {
@@ -788,35 +790,35 @@ var ui = {
 
 	// text editors
 	setGeneralToadHouseText: function(text) {
-		var defaultChunks = text.split(rom.toadHouseLineLength);
-		if (defaultChunks.length > 0) {
+		var lines = text.split(rom.toadHouseLineLength);
+		if (lines.length > 0) {
 			for (var i = 0; i < ui.generalToadHouseTextEditor.length; i++) {
-				ui.generalToadHouseTextEditor[i].value = defaultChunks[i];
+				ui.generalToadHouseTextEditor[i].value = lines[i];
 			}
 		} else {
-			console.log("error setting general toad house text: regexp failed to find chunks");
+			alert("Error Setting General Toad House Text: Main text regexp failed to find lines.");
 		}
 	},
 
 	setWhistleToadHouseText: function(text) {
-		var defaultChunks = text.split(rom.toadHouseLineLength);
-		if (defaultChunks.length > 0) {
+		var lines = text.split(rom.toadHouseLineLength);
+		if (lines.length > 0) {
 			for (var i = 0; i < ui.whistleToadHouseTextEditor.length; i++) {
-				ui.whistleToadHouseTextEditor[i].value = defaultChunks[i];
+				ui.whistleToadHouseTextEditor[i].value = lines[i];
 			}
 		} else {
-			console.log("error setting whistle toad house text: regexp failed to find chunks");
+			alert("Error Setting Whistle Toad House Text: Main text regexp failed to find lines.");
 		}
 	},
 
 	setStrangeToadHouseText: function(text) {
-		var defaultChunks = text.split(rom.toadHouseLineLength);
-		if (defaultChunks.length > 0) {
+		var lines = text.split(rom.toadHouseLineLength);
+		if (lines.length > 0) {
 			for (var i = 0; i < ui.strangeToadHouseTextEditor.length; i++) {
-				ui.strangeToadHouseTextEditor[i].value = defaultChunks[i];
+				ui.strangeToadHouseTextEditor[i].value = lines[i];
 			}
 		} else {
-			console.log("error setting strange toad house text: regexp failed to find chunks");
+			alert("Error Setting Strange Toad House Text: Main text regexp failed to find lines.");
 		}
 	},
 
@@ -861,13 +863,20 @@ var ui = {
 
 	// rom generation
 	onSaveROM: function() {
-		var outputName = ui.selectedFileNameOutput + "-" + ui.seedInput.value + 
-						((ui.flagsInput.value !== "") ? "-" : "") + encodeURIComponent(ui.flagsInput.value) + 
-						ui.selectedFileExtOutput;
+		var selectedFileOutput = ui.fileInputObject.name;
+		var lastDot = selectedFileOutput.lastIndexOf('.');
+		if (lastDot !== -1) {
+			var selectedFileExtOutput = selectedFileOutput.slice(lastDot, selectedFileOutput.length);
+			var selectedFileNameOutput = selectedFileOutput.slice(0, lastDot);
+		}
+
+		var outputName = selectedFileNameOutput + "_" + ui.seedInput.value + 
+						((ui.flagsInput.value !== "") ? "_" : "") + encodeURIComponent(ui.flagsInput.value) + 
+						selectedFileExtOutput;
 		downloadBlob(
 			ui.randomizedFile, 
 			outputName, 
-			"application/" + ui.selectedFileExtOutput
+			"application/" + selectedFileExtOutput
 		);
 	},
 
@@ -885,7 +894,7 @@ var ui = {
 		var fr = new FileReader();
         fr.onload = function() {
         	if (fr.result === null) {
-        		console.log("error loading rom: file reader result is null");
+        		alert("Error Loading ROM: File reader result is null.");
         		return;
         	}
 
@@ -952,9 +961,16 @@ var ui = {
 	},
 
 	saveSpoilers: function() {
+		var selectedFileOutput = ui.fileInputObject.name;
+		var lastDot = selectedFileOutput.lastIndexOf('.');
+		if (lastDot !== -1) {
+			var selectedFileExtOutput = selectedFileOutput.slice(lastDot, selectedFileOutput.length);
+			var selectedFileNameOutput = selectedFileOutput.slice(0, lastDot);
+		}
+
 		downloadBlob(
 			ui.spoilerLog.textContent, 
-			ui.selectedFileNameOutput + "-" + ui.seedInput.value + "-" + encodeURIComponent(ui.flagsInput.value) + "_spoilers.txt", 
+			selectedFileNameOutput + "_" + ui.seedInput.value + "_" + encodeURIComponent(ui.flagsInput.value) + "_spoilers.txt", 
 			"application/text"
 		);
 	},
@@ -977,6 +993,8 @@ var ui = {
 		ui.fileInputBrowse.addEventListener("click", function() {
 			ui.fileInput.click();
 		});
+
+		ui.fileInputReload.addEventListener("click", ui.onFileReload);
 
 		ui.randomizeSeed.addEventListener("click", function() { 
 			ui.onRandomSeed();
@@ -1101,7 +1119,7 @@ var ui = {
 
 		ui.generateRom.addEventListener("click", function() {
 			if (ui.loadedFile === null || ui.loadedFile === undefined) {
-				alert("Error generating randomized ROM: input ROM file is null");
+				alert("Error Generating Randomized ROM: Input ROM file is null.");
 				return;
 			}
 
@@ -1121,8 +1139,15 @@ var ui = {
 					ui.saveRom.disabled = false;
 					ui.setGenerationStatus("Done", "#007F00");
 					ui.generateRom.disabled = true;
-					ui.lastGenerated.innerHTML = ui.selectedFileNameOutput + "-" + ui.seedInput.value + 
-						((ui.flagsInput.value !== "") ? "-" : "") + encodeURIComponent(ui.flagsInput.value);
+
+					var selectedFileOutput = ui.fileInputObject.name;
+					var lastDot = selectedFileOutput.lastIndexOf('.');
+					if (lastDot !== -1) {
+						var selectedFileExtOutput = selectedFileOutput.slice(lastDot, selectedFileOutput.length);
+						var selectedFileNameOutput = selectedFileOutput.slice(0, lastDot);
+					}
+					ui.lastGenerated.innerHTML = selectedFileNameOutput + "_" + ui.seedInput.value + 
+						((ui.flagsInput.value !== "") ? "_" : "") + encodeURIComponent(ui.flagsInput.value);
 					ui.onShowSpoilerLog();
 				} else {
 					alert("Nothing to randomize");
@@ -1190,6 +1215,7 @@ var ui = {
 
 		ui.fileInputFilename.value = "";
 		ui.fileInput.value = "";
+		ui.fileInputReload.disabled = true;
 
 		ui.generateRom.disabled = true;
 		ui.generateSpoilers.disabled = true;
@@ -1210,6 +1236,8 @@ var ui = {
 		ui.onInfiniteLivesChecked();
 		ui.onPermanentPowerupChanged();
 
+
+
 		ui.setGenerationStatus("Need input ROM", "#7F0000");
 	},
 
@@ -1219,9 +1247,15 @@ var ui = {
 
 		// dont store this either, it simply checks for "debug=true" in uri parameters
 		var debugURI = new URL(window.location.href).searchParams.get("debug");
-		if (debugURI) {
-			// then shows debug options
-			document.getElementById("debug-tab").style.display = "block";
+		var debugElements = document.getElementsByClassName("debug");
+		for (var i = 0; i < debugElements.length; i++) {
+			if (!debugURI) {
+				if (debugElements[i].hasOwnProperty("checked")) {
+					debugElements[i].checked = false;
+				}
+				debugElements[i].disabled = true;
+				debugElements[i].style.display = "none";
+			}
 		}
 
 		// store these because the randomizer needs to know if debug options are enabled
@@ -1246,6 +1280,7 @@ var ui = {
 
 		ui.fileInput = document.getElementById("file-input");
 		ui.fileInputBrowse = document.getElementById("file-input-browse");
+		ui.fileInputReload = document.getElementById("file-input-reload")
 		ui.fileInputFilename = document.getElementById("file-input-filename");;
 		ui.selectedFileOutput = document.getElementById("selected-file");
 		ui.randomizeSeed = document.getElementById("randomize-seed");

@@ -225,17 +225,9 @@ var rom = {
 	marioColorTanookiPointer: 0x1054D, // 4 bytes
 	marioColorHammerPointer: 0x10551, // 4 bytes
 
-	// replace a cmp operation value
-	marioMapPaletteFixValuePointer: 0x14E5E, // 1 byte, from prg010
-	marioMapPaletteFixValue2Pointer: 0x37900, // 1 byte, from prg027
-
-	// replaces palette value on map 
-	marioMapPaletteFixPointer: 0x37820, // 1 byte
-	luigiMapPaletteFixPointer: 0x37821, // 1 byte
-	// ; patches $1A (Luigi) for $16 as needed
-	// Map_PostJC_PUpPML:	.byte $16, $1A
-	marioMapPaletteFixPostPointer: 0x14DD1, // 1 byte
-	luigiMapPaletteFixPostPointer: 0x14DD2, // 1 byte
+	// REMOVED MARIO/LUGI PALETTE CORRECTION STUFF BECAUSE IT WAS A MESS!!!
+	// there was something i am missing or i was going about it all wrong, need to look deeper into it
+	// luigi gets shafted again
 
 	// ; InitPals_Per_MapPUp
 	// ; Palettes as indexed by InitPal_Per_MapPowerup
@@ -260,15 +252,36 @@ var rom = {
 	marioColorMapJudgemsPointer: 0x37847, // 4 bytes
 	marioColorMapPWingPointer: 0x3784B, // 4 bytes
 
+	marioColorMapInvUseSmallPointer: 0x3457F,
+	marioColorMapInvUseBigPointer: 0x34583,
+	marioColorMapInvUseFirePointer: 0x34587,
+	marioColorMapInvUseLeafPointer: 0x3458B,
+	marioColorMapInvUseFrogPointer: 0x3458F,
+	marioColorMapInvUseTanookiPointer: 0x34593,
+	marioColorMapInvUseHammerPointer: 0x34597,
+	marioColorMapInvUseCloudPointer: 0x3459B,
+	marioColorMapInvUsePWingPointer: 0x3459F,
+
+	luigiColorMapInvUseSmallPointer: 0x345A3,
+	luigiColorMapInvUseBigPointer: 0x345A7,
+	luigiColorMapInvUseFlowerPointer: 0x345AB,
+	luigiColorMapInvUseLeafPointer: 0x345AF,
+	luigiColorMapInvUseFrogPointer: 0x345B3,
+	luigiColorMapInvUseTanookiPointer: 0x345B7,
+	luigiColorMapInvUseHammerPointer: 0x345BB,
+	luigiColorMapInvUseCloudPointer: 0x345BF,
+	luigiColorMapInvUsePWingPointer: 0x345C3,
+
 	// ; Color table for setting the 2nd entry power up color on the map used for clearing Judgem's cloud!
 	// ; NOTE: This is a patch table, you'll want it to agree with PRG027's "InitPals_Per_MapPUp"
 	// Map_PostJC_PUpPP1:	.byte $16, $16, $27, $16, $2A, $17, $30
-	marioColorMapPowerUpPost1Pointer: 0x14DCA, // 7 bytes
+	marioColorMapCloudPostPrimaryPointer: 0x14DCA, // 7 bytes
 
+	// i dont use this because i dont change outline colors
 	// ; Color table for setting the 4th entry power up color on the map used for clearing Judgem's cloud!
 	// ; NOTE: This is a patch table, you'll want it to agree with PRG027's "InitPals_Per_MapPUp"
 	// Map_PostJC_PUpPP2:	.byte $0F, $0F, $16, $0F, $0F, $0F, $0F
-	marioColorMapPowerUpPost2Pointer: 0x14DD3, // 7 bytes
+	marioColorMapCloudPostOutlinePointer: 0x14DD3, // 7 bytes
 
 	// vanilla values
 	// .byte $0F, $16, $30, $36, $0F, $16, $30, $21	; Mario
@@ -286,6 +299,7 @@ var rom = {
 	playerGetsHurtPointer: 0x19FA, // pointer to a JMP instruction value
 	playerGetsHurtOHKOValue: 0x7A, // change the normal JMP address to the address of when mario dies from an enemy hit
 
+	// not sure why i commented these out or what i thought they were used for
 	// found in PRG000.asm, Player_Die
 	//playerDeathSuitChangePointer: 0x1AAD,
 	// found in PRG024.asm, Title_PrepForWorldMap
@@ -684,8 +698,9 @@ var rom = {
 		}
 	],
 
-	toadHouseItem2Pointer: 0x3B14B,
-	toadHouseRandomItemPointer: 0x3B164,
+	toadHouseRandomItemPointer: 0x3B164, // 16 bytes
+	toadHouseItemOffsetPointer: 0x3B15A, // 9 bytes
+	toadhouseItemToInventoryPointer: 0x3B14B, // 15 bytes 
 
 	// must use patch.addStartingXLocationCheck for this to have any effect
 	playerStartingLocationXPointer: 0x3DFC6,
@@ -711,6 +726,8 @@ var rom = {
 	whistleHammerBroPointer: 0x1619D, // use debugInventoryItemName value
 	whistleW1FortressPointer: 0xD36A, // use debugInventoryItemName value - 1
 
+	whiteToadHousePointer: 0x19309, // 16 bytes, 2 bytes each world, only first byte used
+
 	// accepted values and names for starting inventory
 	debugInventoryItemName: [
 		"NULL", // 0
@@ -723,10 +740,10 @@ var rom = {
 		"Cloud", // 7
 		"P-Wing", // 8
 		"Star", // 9
-		"Anchor", // 10
-		"Hammer", // 11
-		"Whistle", // 12
-		"Music Box", // 13
+		"Anchor", // A
+		"Hammer", // B
+		"Whistle", // C
+		"Music Box", // D
 	],
 	debugInventoryPointer: 0x30D8E,
 	
