@@ -221,48 +221,33 @@ var patch = {
 
 	allowHammerToBreakLocks: {
 		// found in PRG026.asm, in empty space at end of bank
-		// using 54 bytes, 2730 remaining free bytes starting at $35566
+		// using 30 bytes, 2754 remaining free bytes starting at $3554E
 		"35530": [
-			// RockBreak_GetMapTileNearPlayer:
-			"a4", "0", // LDY <Temp_Var1	 		; Y = LDY <Temp_Var1
-			"20", "69", "d3", // JSR MapTile_Get_By_Offset	; Get map tile nearby player (on page 10)
-			"60", // RTS
-
 			// RockBreak_IncLocks:
-			// ; Rock tiles
-			"20", "20", "b5", // JSR RockBreak_GetMapTileNearPlayer
+			"a4", "00", // LDY <Temp_Var1	 		; Y = LDY <Temp_Var1
+			"20", "69", "d3", // JSR MapTile_Get_By_Offset	; Get map tile nearby player (on page 10)
+
+			//; Lock tiles
+			"cd", "54" "00", // CMP TILE_LOCKVERT ; compare directly to TILE_LOCKVERT
+			"f0", "0e", // BEQ RockBreak_LockVert
+
+			"cd", "56", "00", // CMP TILE_LOCKHORZ ; compare directly to TILE_LOCKVERT
+			"f0", "0c", // BEQ RockBreak_LockHorz
+
+			"cd", "e4", "00", // CMP TILE_ALTLOCK ; compare directly to TILE_ALTLOCK, only found in sky portion of world 5? (blue lock)
+			"f0", "07", // BEQ RockBreak_LockHorz ; only break horizontally
+
+			//; Rock tiles
 			"38", "e9", "51", // SUB #TILE_ROCKBREAKH	 ; Offset to rock tiles
-			"c9", "2", // CMP #$02
-			"90", "1f", // BLT RockBreak_Rock
-
-			// ; Lock tiles
-			"20", "20", "b5", // JSR RockBreak_GetMapTileNearPlayer
-			"38", "e9", "54", // SUB #TILE_LOCKVERT ; offset to vertical lock
-			"c9", "0", // CMP #$00 ; is 0 when map tile is this lock
-			"f0", "16", // BEQ RockBreak_LockVert ; need to test lock directly because they are scattered around
-
-			"20", "20", "b5", // JSR RockBreak_GetMapTileNearPlayer
-			"38", "e9", "56", // SUB #TILE_LOCKHORZ ; offset to horizontal lock
-			"c9", "0", // CMP #$00 ; is 0 when map tile is this lock
-			"f0", "f", // BEQ RockBreak_LockVert ; need to test lock directly because they are scattered around
-
-			"20", "20", "b5", // JSR RockBreak_GetMapTileNearPlayer
-			"38", "e9", "e4", // SUB #TILE_ALTLOCK ; only found on sky portion of world 5? (only break horizontal)
-			"c9", "0", // CMP #$00 ; is 0 when map tile is this lock
-			"f0", "5", // BEQ RockBreak_LockHorz ; need to test lock directly because they are scattered around
-
 			"60", // RTS
-
-			// RockBreak_Rock:
-			"60", // RTS ; rock result will already be the correct path
 
 			// RockBreak_LockVert:
-			"a9", "1", // LDA #$01 ; 1 for a vertical path when lock is removed
+			"a9", "01", // LDA #$01 ; set to 1 for vertical path under lock
 			"60", // RTS
 
 			// RockBreak_LockHorz:
-			"a9", "0", // LDA #$00 ; 0 for a horizontal path when lock is removed
-			"60" // RTS
+			"a9", "00", // LDA #$00 ; set to 1 for horizontal path under lock
+			"60", // RTS
 		],
 
 		// found in PRG026.asm, PRG026_A6BF
@@ -284,80 +269,71 @@ var patch = {
 	},
 
 	disablePowerups_CloudFix: {
-		"35566": [
-			"bd",
-			"65",
-			"a5",
-			"c9",
-			"7",
-			"f0",
-			"b",
-			"ad",
-			"f6",
-			"4",
-			"9",
-			"80",
-			"8d",
-			"f6",
-			"4",
-			"4c",
-			"1b",
-			"a6",
-			"4c",
-			"dc",
-			"a5"
+		// found in PRG026.asm, in empty space at end of bank after space reserved for allowHammerToBreakLocks
+		// using 21 bytes, 2733 remaining free bytes starting at $35563
+		"3554E": [
+			// InvItem_AllowCloud:
+			"bd", "65", "a5", // LDA InvItem_PerPowerUp_Disp,X ; get current powerup
+			"c9", "7", // CMP #$07 ; if power up is cloud
+			"f0", "b", // BEQ InvItem_UsedCloud
+
+			"ad", "f6", "4", // LDA Sound_QMap ; get sound queue
+			"9", "80", // ORA #SND_MAPDENY
+			"8d", "f6", "4", // STA Sound_QMap	 ; Denial sound
+
+			"4c", "1b", "a6", // JMP Inv_UseItem_ShiftOver ; skip over default routine and just remove item from inventory
+
+			// InvItem_UsedCloud:
+			"4c", "dc", "a5" // ; return to default behavior
 		],
+
 		"345e9": [
-			"4c",
-			"56",
-			"b5",
-			"b9",
-			"6f",
-			"a5",
-			"8d",
-			"d2",
-			"7",
-			"b9",
-			"70",
-			"a5",
-			"8d",
-			"d3",
-			"7",
-			"b9",
-			"71",
-			"a5",
-			"8d",
-			"d4",
-			"7",
-			"a9",
-			"6",
-			"85",
-			"5e",
-			"bd",
-			"5c",
-			"a5",
-			"8d",
-			"f2",
-			"4",
-			"bd",
-			"65",
-			"a5",
-			"ae",
-			"26",
-			"7",
-			"8d",
-			"f3",
-			"3",
+			// PRG026_A5D9:
+			"4c", "56", "b5", // JMP InvItem_AllowCloud ; insert hijack
+
+			// PRG026_A5D9_Default: ; default functionality to return to after hijack
+			//; Load the colors for this power-up into the palette buffer
+			"b9", "6f", "a5", // LDA InvItem_PerPowerUp_Palette,Y
+			"8d", "d2", "7", // STA Palette_Buffer+17
+			"b9", "70", "a5", // LDA InvItem_PerPowerUp_Palette+1,Y
+			"8d", "d3", "7", // STA Palette_Buffer+18
+			"b9", "71", "a5", // LDA InvItem_PerPowerUp_Palette+2,Y
+			"8d", "d4", "7", // STA Palette_Buffer+19
+
+			//; Queue palette update
+			"a9", "6", // LDA #$06
+			"85", "5e", // STA <Graphics_Queue
+
+			//; Play the correct sound for this power up item
+			"bd", "5c", "a5", // LDA InvItem_PerPowerUp_L1Sound,X
+			"8d", "f2", "4", // STA Sound_QLevel1
+			
+			"bd", "65", "a5", // LDA InvItem_PerPowerUp_Disp,X	; Store proper power-up to display -> A
+			"ae", "26", "7", // LDX Player_Current	 			; X = Player_Current
+			"8d", "f3", "3", // STA Map_Power_Disp	 			; Power-up to display -> Map_Power_Disp
+
+			//; rest is unneeded since all powerups are disabled
+			// replaces...
+			//		CMP #$07
+			//		BEQ PRG026_A60B
+			// with...
+			//		; hijack insertion will pad some of this (NOP*3)
 			"ea",
-			"ea",
-			"ea",
-			"ea",
-			"ea",
-			"ea",
-			"ea",
-			"ea",
-			"ea",
-			"ea"
+
+			// replaces...
+			// 		CMP #$08	 
+			// 		BNE PRG026_A608	 	; If Map_Power_Disp <> $08 (P-Wing), jump to PRG026_A608
+			// 		LDA #$03	 		; For P-Wing, "Map Power Up" is set as Leaf
+			// with...
+			"ea", "ea",
+			"ea", "ea", 
+			"ea", "ea",
+
+			// replaces...
+			// PRG026_A608:
+			// 		STA World_Map_Power,X
+			// with...
+			"ea", "ea", "ea"
 		]
 	},
 
