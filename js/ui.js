@@ -26,6 +26,10 @@ var ui = {
 		
 	],
 
+	todoEntry: [
+
+	],
+
 	defaultToadHouseText: [
 		" Pick a box.    Its contents   will help you  on your way.                                ",
 		"One toot on    this whistle   will send you  to a far~away  land!                         ",
@@ -585,15 +589,12 @@ var ui = {
 		var flags;
 		try {
 			flags = atob(ui.flagsInput.value);
-		} catch {
+		} catch (e) {
 			return false;
 		}
 
-		var flagsStr = atob(ui.flagsInput.value).split(' ');
-		var flags = [ parseInt(flagsStr[0]), parseInt(flagsStr[1]) ];
-
-		console.log("flags[0]: " + flags[0]);
-		console.log("flags[1]: " + flags[1]);
+		var flagsStr = flags.split(' ');
+		flags = [ parseInt(flagsStr[0]), parseInt(flagsStr[1]) ];
 
 		for (var i = 0; i < ui.flaggableOptions.length; i++) {
 			ui.flaggableOptions[i].checked = false;
@@ -804,7 +805,7 @@ var ui = {
 
 	// text editors
 	setGeneralToadHouseText: function(text) {
-		var lines = text.split(rom.toadHouseLineLength);
+		var lines = text.splitBySize(rom.toadHouseLineLength);
 		if (lines.length > 0) {
 			for (var i = 0; i < ui.generalToadHouseTextEditor.length; i++) {
 				ui.generalToadHouseTextEditor[i].value = lines[i];
@@ -815,7 +816,7 @@ var ui = {
 	},
 
 	setWhistleToadHouseText: function(text) {
-		var lines = text.split(rom.toadHouseLineLength);
+		var lines = text.splitBySize(rom.toadHouseLineLength);
 		if (lines.length > 0) {
 			for (var i = 0; i < ui.whistleToadHouseTextEditor.length; i++) {
 				ui.whistleToadHouseTextEditor[i].value = lines[i];
@@ -826,7 +827,7 @@ var ui = {
 	},
 
 	setStrangeToadHouseText: function(text) {
-		var lines = text.split(rom.toadHouseLineLength);
+		var lines = text.splitBySize(rom.toadHouseLineLength);
 		if (lines.length > 0) {
 			for (var i = 0; i < ui.strangeToadHouseTextEditor.length; i++) {
 				ui.strangeToadHouseTextEditor[i].value = lines[i];

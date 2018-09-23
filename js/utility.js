@@ -5,7 +5,9 @@ String.prototype.replaceAll = function(search, replacement) {
     return target.replace(new RegExp(search, 'g'), replacement);
 };
 
-String.prototype.split = function(size) {
+// wtf, no idea why i thought i could overload this with the same number of parameters and js doesnt even support overloading
+// maybe didnt realize js already defined split in strings? whatever...
+String.prototype.splitBySize = function(size) {
 	var target = this;
 	var re = new RegExp('.{1,' + size + '}', 'g');
 	return target.match(re);
