@@ -5,6 +5,9 @@ var ui = {
 	],
 
 	changelogEntry: [
+		{ date: new Date("2018-9-23"), text: "Implemented level enemy palette randomizer." },
+		{ date: new Date("2018-9-23"), text: "Implemented Toad House item shuffling." },
+		{ date: new Date("2018-9-19"), text: "Implemented world map palette randomizer." },
 		{ date: new Date("2018-9-17"), text: "Implemented item block randomizer." },
 		{ date: new Date("2018-9-16"), text: "Implemented debug enabler and option for setting the item that fills inventory. Set a URL parameter called \"debug\" to true to access this. (e.g. index.html?debug=true)" },
 		{ date: new Date("2018-9-15"), text: "Implemented hammer ability to break fortress locks. This hack actually isn't stolen, see patch.allowHammerToBreakLocks in <a href=\"js/patch.js\">patch.js</a> for assembly documentation." },
@@ -138,6 +141,7 @@ var ui = {
 	randomizeKoopaEarthquakes: null,
 	randomizeKoopaKidHP: null,
 	randomizeHammerBros: null,
+	randomizeEnemyPalettes: null,
 	shuffleNGame: null,
 	shuffleNGamePrizes: null,
 	randomizeCastleItems: null,
@@ -549,6 +553,10 @@ var ui = {
 			flags[0] |= 1 << 31;
 		}
 
+		if (ui.randomizeEnemyPalettes.checked) {
+			flags[1] |= 1 << 0;
+		}
+
 		var changedStartingLives = false;
 		if (parseInt(ui.startingLives.value) !== 4) {
 			changedStartingLives = true;
@@ -780,6 +788,12 @@ var ui = {
 		if (flags[0] & (1 << 31)) {
 			if (!ui.infinitePSpeed.disabled) {
 				ui.infinitePSpeed.checked = true;
+			}
+		}
+
+		if (flags[1] & (1 << 0)) {
+			if (!ui.randomizeEnemyPalettes.disabled) {
+				ui.randomizeEnemyPalettes.checked = true;
 			}
 		}
 
@@ -1333,6 +1347,7 @@ var ui = {
 		ui.randomizeKoopaEarthquakes = document.getElementById("randomize-koopa-earthquakes");
 		ui.randomizeKoopaKidHP = document.getElementById("randomize-koopa-kid-HP");
 		ui.randomizeHammerBros = document.getElementById("randomize-hammer-bros");
+		ui.randomizeEnemyPalettes = document.getElementById("randomize-enemy-palettes");
 
 		ui.shuffleNGame = document.getElementById("shuffle-n-game");
 		ui.shuffleNGamePrizes = document.getElementById("randomize-n-game-prizes");

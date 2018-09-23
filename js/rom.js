@@ -264,7 +264,7 @@ var rom = {
 
 	luigiColorMapInvUseSmallPointer: 0x345A3,
 	luigiColorMapInvUseBigPointer: 0x345A7,
-	luigiColorMapInvUseFlowerPointer: 0x345AB,
+	luigiColorMapInvUseFirePointer: 0x345AB,
 	luigiColorMapInvUseLeafPointer: 0x345AF,
 	luigiColorMapInvUseFrogPointer: 0x345B3,
 	luigiColorMapInvUseTanookiPointer: 0x345B7,
@@ -327,8 +327,8 @@ var rom = {
 	],
 
 	levelStylePointer: [
-		0x10010,
-		0x14010,
+		0x10010, // plains
+		0x14010, // fortress
 		0x0FF10,
 		0x16010,
 		0x18010,
@@ -344,14 +344,33 @@ var rom = {
 		0x10010,
 		0x10010
 	],
-
-	warpZonePointer: [
-		0x19C51, 0x19C52, 0x19C53,
-		0x19C55, 0x19C56, 0x19C57,
-		0x19C5A,
+	levelStylePalettePointer: [
+		// 8 groups of 16 bytes for bg palettes
+		// 4 groups of 16 bytes for sprite palettes
+		0x36CA2, // plains
+		0x36D62, // fortress
+		0x36E22,
+		0x36EE2,
+		0x36FA2,
+		0x37062,
+		0x37122,
+		0x371E2,
+		0x372A2,
+		0x37362,
+		0x37422,
+		0x374E2,
+		0x375A2,
+		0x37662,
+		0x37722
 	],
 
-	mapPointer: [
+	warpZonePointer: [
+		0x19C51, 0x19C52, 0x19C53, // entrances to worlds 2, 3, and 4
+		0x19C55, 0x19C56, 0x19C57, // entrances to worlds 5, 6, and 7
+						  0x19C5A, // entrance to world 8
+	],
+
+	mapTilePointer: [
 		0x185BA, // world 1
 		0x1864B, // world 2
 		0x1876C, // world 3
@@ -634,65 +653,65 @@ var rom = {
 
 	worlds: [
 		{ // world 1
-			mapSpritePointer: 0x185BA,
-			mapLocationPotiner: 0x19434,
+			mapTilePointer: 0x185BA,
+			mapLocationPointer: 0x19434,
 			mapLocationCount: 21,
 
 			hammerBroItemsPointer: 0x16190,
 		},
 		{ // world 2
-			mapSpritePointer: 0x1864B,
-			mapLocationPotiner: 0x194B6,
+			mapTilePointer: 0x1864B,
+			mapLocationPointer: 0x194B6,
 			mapLocationCount: 47,
 
 			hammerBroItemsPointer: 0x16199,
 		},
 		{ // world 3
-			mapSpritePointer: 0x1876C,
-			mapLocationPotiner: 0x195D4,
+			mapTilePointer: 0x1876C,
+			mapLocationPointer: 0x195D4,
 			mapLocationCount: 52,
 
 			hammerBroItemsPointer: 0x161A2,
 		},
 		{ // world 4
-			mapSpritePointer: 0x1891D,
-			mapLocationPotiner: 0x19710,
+			mapTilePointer: 0x1891D,
+			mapLocationPointer: 0x19710,
 			mapLocationCount: 34,
 
 			hammerBroItemsPointer: 0x161AB,
 		},
 		{ // world 5
-			mapSpritePointer: 0x18A3E,
-			mapLocationPotiner: 0x197E0,
+			mapTilePointer: 0x18A3E,
+			mapLocationPointer: 0x197E0,
 			mapLocationCount: 42,
 
 			hammerBroItemsPointer: 0x161B4,
 		},
 		{ // world 6
-			mapSpritePointer: 0x18B5F,
-			mapLocationPotiner: 0x198E0,
+			mapTilePointer: 0x18B5F,
+			mapLocationPointer: 0x198E0,
 			mapLocationCount: 57,
 
 			hammerBroItemsPointer: 0x161BD,
 		},
 		{ // world 7
-			mapSpritePointer: 0x18D10,
-			mapLocationPotiner: 0x19A3A,
+			mapTilePointer: 0x18D10,
+			mapLocationPointer: 0x19A3A,
 			mapLocationCount: 46,
 
 			hammerBroItemsPointer: 0x161C6,
 		},
 		{ // world 8
-			mapSpritePointer: 0x18E31,
-			mapLocationPotiner: 0x19B52,
+			mapTilePointer: 0x18E31,
+			mapLocationPointer: 0x19B52,
 			mapLocationCount: 41,
 
 			hammerBroItemsPointer: 0x161CF,
 		},
 		{ // warp world
-			mapSpritePointer: 0x19072,
-			mapLocationPotiner: 0,
-			mapLocationCount: 0,
+			mapTilePointer: 0x19072,
+			mapLocationPointer: 0x19C48, // may not be correct, calculated from world 8 mapLocationPointer+(41+41+(41*2)+(41*2))
+			mapLocationCount: 10,
 
 			hammerBroItemsPointer: null,
 		}
@@ -722,6 +741,19 @@ var rom = {
 		"Random Super Suit",
 		"Random Basic Item"
 	],
+	toadHouseItemToInventoryName: [
+		"Whistle",
+		"P-Wing",
+		"Frog Suit",
+		"Tanooki",
+		"Hammer Suit",
+		"Frog Suit",
+		"Tanooki",
+		"Hammer Suit",
+		"Mushroom",
+		"Fire Flower",
+		"Leaf"
+	],
 	whistleToadHousePointer: 0x2D6D,
 	whistleHammerBroPointer: 0x1619D, // use debugInventoryItemName value
 	whistleW1FortressPointer: 0xD36A, // use debugInventoryItemName value - 1
@@ -729,7 +761,7 @@ var rom = {
 	whiteToadHousePointer: 0x19309, // 16 bytes, 2 bytes each world, only first byte used
 
 	// accepted values and names for starting inventory
-	debugInventoryItemName: [
+	inventoryItemName: [
 		"NULL", // 0
 		"Mushroom", // 1
 		"Flower", // 2

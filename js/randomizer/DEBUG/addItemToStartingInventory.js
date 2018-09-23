@@ -1,4 +1,5 @@
 function DEBUG_addItemToStartingInventory(ROM, item) {
 	ROM[rom.debugInventoryPointer] = item;
-	ui.addSpoiler("Added " + rom.debugInventoryItemName[item] + " To Debug Inventory");
+	ui.addSpoiler("Added " + rom.inventoryItemName[item] + " To Debug Inventory");
+	ui.addSpoiler();
 }

@@ -1,12 +1,12 @@
 var WorldData = function(ROM, world) {
 	this.name = (world+1).toString();
 	this.index = world;
-	this.mapLocationPotiner = rom.worlds[world].mapLocationPotiner;
+	this.mapLocationPointer = rom.worlds[world].mapLocationPointer;
 	this.header = [  // copy header
-		ROM[this.mapLocationPotiner], 
-		ROM[this.mapLocationPotiner+1], 
-		ROM[this.mapLocationPotiner+2], 
-		ROM[this.mapLocationPotiner+3]
+		ROM[this.mapLocationPointer], 
+		ROM[this.mapLocationPointer+1], 
+		ROM[this.mapLocationPointer+2], 
+		ROM[this.mapLocationPointer+3]
 	];
 	this.count = rom.worlds[world].mapLocationCount; // number of tiles player can move to in a world
 
@@ -18,7 +18,7 @@ var WorldData = function(ROM, world) {
 	];
 	this.tiles = [];
 
-	var startPtr = this.mapLocationPotiner+4;
+	var startPtr = this.mapLocationPointer+4;
 	for (var i = 0; i < this.count; i++) {
 		var datasetWPointer = startPtr+i; // 1 byte per count
 		var datasetXPointer = startPtr+this.count+i;  // 1 byte per count

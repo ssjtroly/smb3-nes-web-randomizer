@@ -1,0 +1,3 @@
+function randomizeStagePalettes(ROM) {
+	
+}

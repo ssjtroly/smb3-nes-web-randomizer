@@ -175,7 +175,10 @@ var randomizer = {
 			flags[1] |= 1 << 31;
 		}
 
-		// if this gets to 52 bits, will need a new variable
+		if (ui.randomizeEnemyPalettes.checked) {
+			randomizeEnemyPalettes(ROM);
+			flags[0] |= 1 << 0;
+		}
 
 		var changedStartingLives = false;
 		if (ui.infiniteLives.checked) {

@@ -48,6 +48,7 @@
 	<script type="text/javascript" src="js/randomizer/enemies/randomizeHammerBros.js"></script>
 	<script type="text/javascript" src="js/randomizer/enemies/randomizeKoopaEarthquakes.js"></script>
 	<script type="text/javascript" src="js/randomizer/enemies/randomizeKoopaKidHP.js"></script>
+	<script type="text/javascript" src="js/randomizer/enemies/randomizeEnemyPalettes.js"></script>
 
 	<script type="text/javascript" src="js/randomizer/items/shuffleToadHouses.js"></script>
 	<script type="text/javascript" src="js/randomizer/items/shuffleNGame.js"></script>
@@ -523,6 +524,14 @@
 			</div>
 		</label>
 
+		<label class="option-label">
+			<div class="tooltip tab-child-checkbox">
+				<input class="flaggable" id="randomize-enemy-palettes" type="checkbox" unchecked/>
+				<div class="option-text">Randomize Enemy Palettes</div>
+				<span class="tooltip-text">The palettes for enemies in each level style will have random colors (Note: also changes the colors of other objects, and I have no intention of fixing this)</span>
+			</div>
+		</label>
+
 	</div>
 	<!-- end enemies tab -->
 
@@ -587,10 +596,10 @@
 		</label>
 
 		<label class="option-label">
-			<div class="unimplemented tooltip tab-child-checkbox">
+			<div class="tooltip tab-child-checkbox">
 				<input class="flaggable" id="shuffle-toad-houses" type="checkbox" unchecked/>
-				<div class="option-text">Shuffle Toad Houses</div>
-				<span class="tooltip-text">The Toad item houses will be shuffled resulting in different items being available</span>
+				<div class="option-text">Shuffle Toad House Items</div>
+				<span class="tooltip-text">The Toad House items will be shuffled resulting in different items being available</span>
 			</div>
 		</label>
 
