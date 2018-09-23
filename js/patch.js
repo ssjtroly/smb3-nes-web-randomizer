@@ -228,7 +228,7 @@ var patch = {
 			"20", "69", "d3", // JSR MapTile_Get_By_Offset	; Get map tile nearby player (on page 10)
 
 			//; Lock tiles
-			"cd", "54" "00", // CMP TILE_LOCKVERT ; compare directly to TILE_LOCKVERT
+			"cd", "54", "00", // CMP TILE_LOCKVERT ; compare directly to TILE_LOCKVERT
 			"f0", "0e", // BEQ RockBreak_LockVert
 
 			"cd", "56", "00", // CMP TILE_LOCKHORZ ; compare directly to TILE_LOCKVERT
