@@ -5,7 +5,8 @@ var ui = {
 	],
 
 	changelogEntry: [
-		{ date: new Date("2018-9-23"), text: "Implemented level enemy palette randomizer." },
+		{ date: new Date("2018-9-23"), text: "Implemented stage palette randomizer." },
+		{ date: new Date("2018-9-23"), text: "Implemented enemy palette randomizer." },
 		{ date: new Date("2018-9-23"), text: "Implemented Toad House item shuffling." },
 		{ date: new Date("2018-9-19"), text: "Implemented world map palette randomizer." },
 		{ date: new Date("2018-9-17"), text: "Implemented item block randomizer." },
@@ -106,7 +107,7 @@ var ui = {
 	customizeText: null,
 	customTextContainer: null,
 
-	// these editors are functional but the results arent wrote to ROM yet
+	// these editors are functional but the results arent written to ROM yet
 	generalToadHouseTextEditor: null,
 	generalToadHouseTextDefaultButton: null,
 	whistleToadHouseTextEditor: null,
@@ -141,6 +142,8 @@ var ui = {
 	shuffleWarpZones: null,
 	shuffleWorldPalettes: null,
 	randomizerWorldPalettes: null,
+	shuffleStagePalettes: null,
+	randomizerStagePalettes: null,
 	randomizeEnemies: null,
 	randomizeKoopaEarthquakes: null,
 	randomizeKoopaKidHP: null,
@@ -561,6 +564,14 @@ var ui = {
 			flags[1] |= 1 << 0;
 		}
 
+		if (ui.shuffleStagePalettes.checked) {
+			flags[1] |= 1 << 1;
+		}
+
+		if (ui.randomizeStagePalettes.checked) {
+			flags[1] |= 1 << 2;
+		}
+
 		var changedStartingLives = false;
 		if (parseInt(ui.startingLives.value) !== 4) {
 			changedStartingLives = true;
@@ -795,6 +806,18 @@ var ui = {
 		if (flags[1] & (1 << 0)) {
 			if (!ui.randomizeEnemyPalettes.disabled) {
 				ui.randomizeEnemyPalettes.checked = true;
+			}
+		}
+
+		if (flags[1] & (1 << 1)) {
+			if (!ui.shuffleStagePalettes.disabled) {
+				ui.shuffleStagePalettes.checked = true;
+			}
+		}
+
+		if (flags[1] & (1 << 2)) {
+			if (!ui.randomizeStagePalettes.disabled) {
+				ui.randomizeStagePalettes.checked = true;
 			}
 		}
 
@@ -1051,10 +1074,12 @@ var ui = {
 
 		ui.flagsInput.addEventListener("input", function() { 
 			ui.onFlagsChanged();
+			ui.onAnyOptionChanged();
 		});
 
 		ui.flagsInput.addEventListener("focusout", function() { 
-			ui.onFlagsFocusOut(); 
+			ui.onFlagsFocusOut();
+			ui.onAnyOptionChanged();
 		});
 
 		for (var i = 0; i < ui.tabButtons.length; i++) {
@@ -1343,6 +1368,8 @@ var ui = {
 		ui.shuffleWarpZones = document.getElementById("shuffle-warp-zones");
 		ui.shuffleWorldPalettes = document.getElementById("shuffle-world-palettes");
 		ui.randomizeWorldPalettes = document.getElementById("randomize-world-palettes");
+		ui.shuffleStagePalettes = document.getElementById("shuffle-stage-palettes");
+		ui.randomizeStagePalettes = document.getElementById("randomize-stage-palettes");
 
 		ui.randomizeEnemies = document.getElementById("randomize-enemies");
 		ui.randomizeKoopaEarthquakes = document.getElementById("randomize-koopa-earthquakes");

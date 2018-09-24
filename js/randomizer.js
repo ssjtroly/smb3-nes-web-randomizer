@@ -177,7 +177,17 @@ var randomizer = {
 
 		if (ui.randomizeEnemyPalettes.checked) {
 			randomizeEnemyPalettes(ROM);
-			flags[0] |= 1 << 0;
+			flags[1] |= 1 << 0;
+		}
+
+		if (ui.shuffleStagePalettes.checked) {
+			shuffleStagePalettes(ROM);
+			flags[1] |= 1 << 1;
+		}
+
+		if (ui.randomizeStagePalettes.checked) {
+			randomizeStagePalettes(ROM);
+			flags[1] |= 1 << 2;
 		}
 
 		var changedStartingLives = false;

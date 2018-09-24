@@ -14,13 +14,37 @@ function randomizeWorldPalettes(ROM) {
 			var colorOffset = paletteOffset+j;
 			var orginalColor = ROM[rom.mapPalettePointer+colorOffset];
 
-			if (orginalColor === 0x0F || orginalColor === 0xFF) {
-				// dont randomize black
+			if (orginalColor === 0x0F || (orginalColor & 0x0F) === 0x0) {
+				// skip black which is *probably* an outline
+				// also skip black or white/grey
 				continue;
 			}
 
-			var value = palette[getRandomInt(4)][getRandomIntRange(0x1, 0xC)];
-			ROM[rom.mapPalettePointer+colorOffset] = value;
+			var color = getRandomNESPaletteColor(palette);
+			// this is just a workaround until i fix all my palette stuff
+			// allowing black and white/grey to be generated should be a parameter
+			// right now i have no idea what getRandomNESPaletteColor will do MonkaS
+			while ((color & 0x0F) > 0xC || (color & 0x0F) === 0x0) {
+				color = getRandomNESPaletteColor(palette);
+			}
+
+			// completely random colors
+			//ROM[rom.mapPalettePointer+colorOffset] = color;
+
+			// keeps shading completely the same
+			ROM[rom.mapPalettePointer+colorOffset] = (ROM[rom.mapPalettePointer+colorOffset] & 0xF0) | (color & 0x0F);
+
+			/*
+			// keep shading similar
+			var tint = (ROM[rom.mapPalettePointer+colorOffset] & 0xF0) >> 4;
+			if (tint < 2) {
+				tint = getRandomInt(2);
+			} else {
+				tint = getRandomInt(2)+2;
+			}
+
+			ROM[rom.mapPalettePointer+colorOffset] = (tint << 4) | (color & 0x0F);
+			*/
 		}
 
 		// im too lazy to write detailed spoilers for this, does it really matter?

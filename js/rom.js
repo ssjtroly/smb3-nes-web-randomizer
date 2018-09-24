@@ -326,6 +326,24 @@ var rom = {
 		0x36C72, // Map object colors used in World 8
 	],
 
+	levelStyleName: [
+		"Plains",
+		"Fortress",
+		"Hills",
+		"Sky",
+		"Plant",
+		"Water",
+		"ToadHouse",
+		"Pipe",
+		"Desert",
+		"Airship",
+		"Giant",
+		"Ice",
+		"Clouds",
+		"Underground",
+		"Bonus"
+	],
+
 	levelStylePointer: [
 		0x10010, // plains
 		0x14010, // fortress
@@ -349,19 +367,19 @@ var rom = {
 		// 4 groups of 16 bytes for sprite palettes
 		0x36CA2, // plains
 		0x36D62, // fortress
-		0x36E22,
-		0x36EE2,
-		0x36FA2,
-		0x37062,
-		0x37122,
-		0x371E2,
-		0x372A2,
-		0x37362,
-		0x37422,
-		0x374E2,
-		0x375A2,
-		0x37662,
-		0x37722
+		0x36E22, // HillsUnder
+		0x36EE2, // HighUp
+		0x36FA2, // Plant
+		0x37062, // Water
+		0x37122, // Toad
+		0x371E2, // PipeMaze
+		0x372A2, // Desert
+		0x37362, // Airship
+		0x37422, // Giant
+		0x374E2, // Ice
+		0x375A2, // Sky
+		0x37662, // underground/2p vs
+		0x37722 // bonus
 	],
 
 	warpZonePointer: [

@@ -323,6 +323,14 @@ var Configuration = function(buffer = null) {
 			this.flags[1] |= 1 << 0;
 		}
 
+		if (ui.shuffleStagePalettes.checked) {
+			this.flags[1] |= 1 << 1;
+		}
+
+		if (ui.randomizeStagePalettes.checked) {
+			this.flags[1] |= 1 << 2;
+		}
+
 		this.marioColor = parseInt(ui.marioColor.value);
 		this.marioComplexion = parseInt(ui.marioComplexion.value);
 		this.startingLives = parseInt(ui.startingLives.value);
@@ -542,6 +550,18 @@ var Configuration = function(buffer = null) {
 		if (this.flags[1] & (1 << 0)) {
 			if (!ui.randomizeEnemyPalettes.disabled) {
 				ui.randomizeEnemyPalettes.checked = true;
+			}
+		}
+
+		if (this.flags[1] & (1 << 1)) {
+			if (!ui.shuffleStagePalettes.disabled) {
+				ui.shuffleStagePalettes.checked = true;
+			}
+		}
+
+		if (this.flags[1] & (1 << 2)) {
+			if (!ui.randomizeStagePalettes.disabled) {
+				ui.randomizeStagePalettes.checked = true;
 			}
 		}
 	};
