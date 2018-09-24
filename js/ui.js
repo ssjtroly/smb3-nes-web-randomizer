@@ -1,3 +1,8 @@
+/*************************************************************************************/
+//	WARNING:
+//		Watch your step, this place is a mess!
+/*************************************************************************************/
+
 var ui = {
 	// static text
 	manualTodo: [
@@ -374,9 +379,9 @@ var ui = {
 
 		switch (permanentPowerupValue) {
 			case -1:
-				ui.ohkoMode.checked = false;
+				//ui.ohkoMode.checked = false;
 				ui.ohkoMode.disabled = false;
-				ui.infinitePSpeed.checked = false;
+				//ui.infinitePSpeed.checked = false;
 				ui.infinitePSpeed.disabled = false;
 				ui.infinitePSpeed.indeterminate = false;
 			break;
@@ -408,7 +413,7 @@ var ui = {
 		}
 
 		if (ui.permanentPowerup.value === "-1") {
-			ui.ohkoMode.checked = false;
+			//ui.ohkoMode.checked = false;
 			ui.ohkoMode.disabled = false;
 		}
 
@@ -426,7 +431,18 @@ var ui = {
 			ui.infinitePSpeed.disabled = true;
 		}
 
+		ui.onOHKOModeChanged();
 		ui.onFlaggableOptionChanged();
+	},
+
+	// ohko mode
+	onOHKOModeChanged: function() {
+		if (ui.ohkoMode.checked) {
+			ui.alwaysRevertToSmall.checked = false;
+			ui.alwaysRevertToSmall.disabled = true;
+		} else {
+			ui.alwaysRevertToSmall.disabled = false;
+		}
 	},
 
 	// flags
@@ -1103,6 +1119,10 @@ var ui = {
 			});
 		}
 
+		ui.ohkoMode.addEventListener("change", function() {
+			ui.onOHKOModeChanged();
+		});
+
 		ui.customizeText.addEventListener("change", function() { 
 			ui.onCustomizeText(); 
 		});
@@ -1283,8 +1303,6 @@ var ui = {
 		ui.onMarioColorChanged();
 		ui.onInfiniteLivesChecked();
 		ui.onPermanentPowerupChanged();
-
-
 
 		ui.setGenerationStatus("Need input ROM", "#7F0000");
 	},
