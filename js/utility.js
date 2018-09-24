@@ -90,6 +90,33 @@ var downloadBlob = function(data, fileName, mimeType) {
 	downloadURL(url, fileName);
 };
 
+function writeMapLevelPointers(ROM, oldWorldData, oldLevel, newWorldData, newLevel) {
+	//console.log(newLevel);
+
+	var oldV1 = oldWorldData.data[0][oldLevel.mapOffset];
+	var randomV1 = newWorldData.data[0][newLevel.mapOffset];
+	ROM[oldWorldData.dataPointer[0][oldLevel.mapOffset]] = (oldV1 & 0xF0) | (randomV1 & 0x0F);
+
+	// not sure what this does but appears to have something 
+	// to do with the location of the level on the world map
+	// shuffling this value will make some levels appear as
+	// hammer bro stages without enemies (i.e. empty tiles
+	// where hammer bros can march to but there is no hammer bro)
+	//var oldV2 = oldWorldData.data[1][oldLevel.mapOffset];
+	//var randomV2 = newWorldData.data[1][newLevel.mapOffset];
+	//ROM[oldWorldData.dataPointer[1][oldLevel.mapOffset]] = oldV2;
+
+	var randomB1V3 = newWorldData.data[2][newLevel.mapOffset][0];
+	var randomB2V3 = newWorldData.data[2][newLevel.mapOffset][1];
+	ROM[oldWorldData.dataPointer[2][oldLevel.mapOffset]] = randomB1V3;
+	ROM[oldWorldData.dataPointer[2][oldLevel.mapOffset]+1] = randomB2V3;
+
+	var randomB1V4 = newWorldData.data[3][newLevel.mapOffset][0];
+	var randomB2V4 = newWorldData.data[3][newLevel.mapOffset][1];
+	ROM[oldWorldData.dataPointer[3][oldLevel.mapOffset]] = randomB1V4;
+	ROM[oldWorldData.dataPointer[3][oldLevel.mapOffset]+1] = randomB2V4;
+}
+
 function rgbToName(rgb) {
 	return "#" + rgb[0].toString(16).padStart(2, '0') + rgb[1].toString(16).padStart(2, '0') + rgb[2].toString(16).padStart(2, '0');
 }

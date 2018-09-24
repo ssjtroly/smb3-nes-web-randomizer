@@ -669,11 +669,17 @@ var rom = {
 	mapPalettePointer: 0x36BE2,
 	mapPaletteIndexPointer: 0x1842D,
 
+	//worldStartPointer: 0x3DFE3,
+	// must apply patch.addWorldOrderArray for this to have any effect
+	worldOrderPointer: 0x3DFC6, // 7 bytes
+
 	worlds: [
 		{ // world 1
 			mapTilePointer: 0x185BA,
 			mapLocationPointer: 0x19434,
 			mapLocationCount: 21,
+			mapAirshipLayoutPointer: 0x19291,
+			mapAirshipObjectPointer: 0x192A1,
 
 			hammerBroItemsPointer: 0x16190,
 		},
@@ -681,6 +687,8 @@ var rom = {
 			mapTilePointer: 0x1864B,
 			mapLocationPointer: 0x194B6,
 			mapLocationCount: 47,
+			mapAirshipLayoutPointer: 0x19293,
+			mapAirshipObjectPointer: 0x192A3,
 
 			hammerBroItemsPointer: 0x16199,
 		},
@@ -688,6 +696,8 @@ var rom = {
 			mapTilePointer: 0x1876C,
 			mapLocationPointer: 0x195D4,
 			mapLocationCount: 52,
+			mapAirshipLayoutPointer: 0x19295,
+			mapAirshipObjectPointer: 0x192A5,
 
 			hammerBroItemsPointer: 0x161A2,
 		},
@@ -695,6 +705,8 @@ var rom = {
 			mapTilePointer: 0x1891D,
 			mapLocationPointer: 0x19710,
 			mapLocationCount: 34,
+			mapAirshipLayoutPointer: 0x19297,
+			mapAirshipObjectPointer: 0x192A7,
 
 			hammerBroItemsPointer: 0x161AB,
 		},
@@ -702,6 +714,8 @@ var rom = {
 			mapTilePointer: 0x18A3E,
 			mapLocationPointer: 0x197E0,
 			mapLocationCount: 42,
+			mapAirshipLayoutPointer: 0x19299,
+			mapAirshipObjectPointer: 0x192A9,
 
 			hammerBroItemsPointer: 0x161B4,
 		},
@@ -709,6 +723,8 @@ var rom = {
 			mapTilePointer: 0x18B5F,
 			mapLocationPointer: 0x198E0,
 			mapLocationCount: 57,
+			mapAirshipLayoutPointer: 0x1929B,
+			mapAirshipObjectPointer: 0x192AB,
 
 			hammerBroItemsPointer: 0x161BD,
 		},
@@ -716,6 +732,8 @@ var rom = {
 			mapTilePointer: 0x18D10,
 			mapLocationPointer: 0x19A3A,
 			mapLocationCount: 46,
+			mapAirshipLayoutPointer: 0x1929D,
+			mapAirshipObjectPointer: 0x192AD,
 
 			hammerBroItemsPointer: 0x161C6,
 		},
@@ -723,6 +741,8 @@ var rom = {
 			mapTilePointer: 0x18E31,
 			mapLocationPointer: 0x19B52,
 			mapLocationCount: 41,
+			mapAirshipLayoutPointer: null,
+			mapAirshipObjectPointer: null,
 
 			hammerBroItemsPointer: 0x161CF,
 		},
@@ -730,6 +750,8 @@ var rom = {
 			mapTilePointer: 0x19072,
 			mapLocationPointer: 0x19C48, // may not be correct, calculated from world 8 mapLocationPointer+(41+41+(41*2)+(41*2))
 			mapLocationCount: 10,
+			mapAirshipLayoutPointer: null,
+			mapAirshipObjectPointer: null,
 
 			hammerBroItemsPointer: null,
 		}
@@ -796,115 +818,6 @@ var rom = {
 		"Music Box", // D
 	],
 	debugInventoryPointer: 0x30D8E,
-	
-	fromRawCharMainText: function(ch) {
-		var decoded = rom.mainTextDecodeTable[ch.toString()];
-		if (decoded !== undefined) return decoded;
-		else return "[" + ch + "]"
-	},
-
-	toRawCharMainText: function(ch) {
-		var encoded = rom.mainTextEncodeTable[ch.toString()];
-		if (encoded !== undefined) return encoded;
-		else return "[" + ch + "]"
-	},
-
-	getLevelsWithProperty: function(propFunc, world = WorldFlag.Any) {
-		var lvls = [
-			[],
-			[],
-			[],
-			[],
-			[],
-			[],
-			[],
-			[],
-			[]
-		];
-
-		if ((world & WorldFlag.World1) !== 0) {
-			for (var i = 0; i < rom.levels[0].length; i++) {
-				var level = rom.levels[0][i];
-				if (propFunc(level) === true) {
-					lvls[0].push(level);
-				}
-			}
-		}
-
-		if ((world & WorldFlag.World2) !== 0) {
-			for (var i = 0; i < rom.levels[1].length; i++) {
-				var level = rom.levels[1][i];
-				if (propFunc(level) === true) {
-					lvls[1].push(level);
-				}
-			}
-		}
-
-		if ((world & WorldFlag.World3) !== 0) {
-			for (var i = 0; i < rom.levels[2].length; i++) {
-				var level = rom.levels[2][i];
-				if (propFunc(level) === true) {
-					lvls[2].push(level);
-				}
-			}
-		}
-
-		if ((world & WorldFlag.World4) !== 0) {
-			for (var i = 0; i < rom.levels[3].length; i++) {
-				var level = rom.levels[3][i];
-				if (propFunc(level) === true) {
-					lvls[3].push(level);
-				}
-			}
-		}
-
-		if ((world & WorldFlag.World5) !== 0) {
-			for (var i = 0; i < rom.levels[4].length; i++) {
-				var level = rom.levels[4][i];
-				if (propFunc(level) === true) {
-					lvls[4].push(level);
-				}
-			}
-		}
-
-		if ((world & WorldFlag.World6) !== 0) {
-			for (var i = 0; i < rom.levels[5].length; i++) {
-				var level = rom.levels[5][i];
-				if (propFunc(level) === true) {
-					lvls[5].push(level);
-				}
-			}
-		}
-
-		if ((world & WorldFlag.World7) !== 0) {
-			for (var i = 0; i < rom.levels[6].length; i++) {
-				var level = rom.levels[6][i];
-				if (propFunc(level) === true) {
-					lvls[6].push(level);
-				}
-			}
-		}
-
-		if ((world & WorldFlag.World8) !== 0) {
-			for (var i = 0; i < rom.levels[7].length; i++) {
-				var level = rom.levels[7][i];
-				if (propFunc(level) === true) {
-					lvls[7].push(level);
-				}
-			}
-		}
-
-		if ((world & WorldFlag.WorldLost) !== 0) {
-			for (var i = 0; i < rom.levels[8].length; i++) {
-				var level = rom.levels[8][i];
-				if (propFunc(level) === true) {
-					lvls[8].push(level);
-				}
-			}
-		}
-
-		return lvls;
-	},
 
 	getEnemyObject: function(id) {
 		for (var i = 0; i < rom.enemyObjects.length; i++) {
@@ -1129,6 +1042,103 @@ var rom = {
 		{ id: 0x7A, type: EnemyType.Enemy, clan: 1, group: 8, yOffset: -1, name: "Big Green Koopa" }, // Big Green Koopa
 		{ id: 0x7E, type: EnemyType.Enemy, clan: 1, group: 8, yOffset: -1, name: "Big Green Paratroopa" }, // Big, bouncing turtle
 	],
+
+	getLevelsWithProperty: function(propFunc, world = WorldFlag.Any) {
+		var lvls = [
+			[],
+			[],
+			[],
+			[],
+			[],
+			[],
+			[],
+			[],
+			[]
+		];
+
+		if ((world & WorldFlag.World1) !== 0) {
+			for (var i = 0; i < rom.levels[0].length; i++) {
+				var level = rom.levels[0][i];
+				if (propFunc(level) === true) {
+					lvls[0].push(level);
+				}
+			}
+		}
+
+		if ((world & WorldFlag.World2) !== 0) {
+			for (var i = 0; i < rom.levels[1].length; i++) {
+				var level = rom.levels[1][i];
+				if (propFunc(level) === true) {
+					lvls[1].push(level);
+				}
+			}
+		}
+
+		if ((world & WorldFlag.World3) !== 0) {
+			for (var i = 0; i < rom.levels[2].length; i++) {
+				var level = rom.levels[2][i];
+				if (propFunc(level) === true) {
+					lvls[2].push(level);
+				}
+			}
+		}
+
+		if ((world & WorldFlag.World4) !== 0) {
+			for (var i = 0; i < rom.levels[3].length; i++) {
+				var level = rom.levels[3][i];
+				if (propFunc(level) === true) {
+					lvls[3].push(level);
+				}
+			}
+		}
+
+		if ((world & WorldFlag.World5) !== 0) {
+			for (var i = 0; i < rom.levels[4].length; i++) {
+				var level = rom.levels[4][i];
+				if (propFunc(level) === true) {
+					lvls[4].push(level);
+				}
+			}
+		}
+
+		if ((world & WorldFlag.World6) !== 0) {
+			for (var i = 0; i < rom.levels[5].length; i++) {
+				var level = rom.levels[5][i];
+				if (propFunc(level) === true) {
+					lvls[5].push(level);
+				}
+			}
+		}
+
+		if ((world & WorldFlag.World7) !== 0) {
+			for (var i = 0; i < rom.levels[6].length; i++) {
+				var level = rom.levels[6][i];
+				if (propFunc(level) === true) {
+					lvls[6].push(level);
+				}
+			}
+		}
+
+		if ((world & WorldFlag.World8) !== 0) {
+			for (var i = 0; i < rom.levels[7].length; i++) {
+				var level = rom.levels[7][i];
+				if (propFunc(level) === true) {
+					lvls[7].push(level);
+				}
+			}
+		}
+
+		if ((world & WorldFlag.WorldLost) !== 0) {
+			for (var i = 0; i < rom.levels[8].length; i++) {
+				var level = rom.levels[8][i];
+				if (propFunc(level) === true) {
+					lvls[8].push(level);
+				}
+			}
+		}
+
+		return lvls;
+	},
 
 	levels: [
 		[ // world 1
@@ -1548,7 +1558,7 @@ var rom = {
 				type: LevelType.Castle | LevelType.Entrance, enemyType: LevelEnemyType.None, name: "Castle",
 				mapOffset: [ 6 ], },
 			{ bytes3: 5, bytes4: 0, enemyCount: 1, enemyPointer: 0xD6AC, objectPointer: 0x2F435, 
-				type: LevelType.Ship | LevelType.Entrance, enemyType: LevelEnemyType.None, name: "ShipAnchor",
+				type: LevelType.Ship | LevelType.Entrance, enemyType: LevelEnemyType.None, name: "Ship Anchor",
 				mapOffset: [ ], },
 			{ bytes3: 0, bytes4: 0, enemyCount: 0, enemyPointer: 0x0, objectPointer: 0x0, 
 				type: LevelType.ToadHouse, enemyType: LevelEnemyType.None, name: "Toad House 1",
@@ -2205,7 +2215,9 @@ var rom = {
 		{ type: ItemBlockType.Brick, bank: 1, id: 9, name: "Brick With Continuious Star" }, // brick with continuious star
 		{ type: ItemBlockType.Brick, bank: 1, id: 10, name: "Brick With Multiple Coins" }, // brick with mutliple coins
 		{ type: ItemBlockType.Brick, bank: 1, id: 11, name: "Brick With 1-Up" }, // brick with 1-up
-	//	{ type: ItemBlockType.Brick, bank: 1, id: 16, name: "Brick" }, // brick, this could possibly break levels if it randomizes to unbreakable
+
+		//{ type: ItemBlockType.Brick, bank: 1, id: 16, name: "Brick" }, // brick, this could possibly break levels if it randomizes to unbreakable
+
 		{ type: ItemBlockType.Brick, bank: 1, id: 48, name: "Brick With Coin" }, // brick with single coin
 
 		{ type: ItemBlockType.MovableWooden, bank: 1, id: 112, name: "Movable Wooden Block" }, // movable wooden block
@@ -2468,10 +2480,21 @@ var rom = {
 		],
 		[ // 19
 		],
-		[ // 1A
-			
+		[ // 1A	
 		],
 	],
+
+	fromRawCharMainText: function(ch) {
+		var decoded = rom.mainTextDecodeTable[ch.toString()];
+		if (decoded !== undefined) return decoded;
+		else return "[" + ch + "]"
+	},
+
+	toRawCharMainText: function(ch) {
+		var encoded = rom.mainTextEncodeTable[ch.toString()];
+		if (encoded !== undefined) return encoded;
+		else return "[" + ch + "]"
+	},
 
 	mainTextDecodeTable: {
 		"0": "|", // world letter new line

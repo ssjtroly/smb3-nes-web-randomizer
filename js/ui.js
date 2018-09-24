@@ -10,6 +10,10 @@ var ui = {
 	],
 
 	changelogEntry: [
+		{ date: new Date("2018-9-24"), text: "Implemented fortress shuffling." },
+		{ date: new Date("2018-9-24"), text: "Implemented world order shuffling." },
+		{ date: new Date("2018-9-24"), text: "Implemented castle shuffling." },
+		{ date: new Date("2018-9-24"), text: "Implemented world 8 ship shuffling." },
 		{ date: new Date("2018-9-23"), text: "Implemented stage palette randomizer." },
 		{ date: new Date("2018-9-23"), text: "Implemented enemy palette randomizer." },
 		{ date: new Date("2018-9-23"), text: "Implemented Toad House item shuffling." },
@@ -258,21 +262,15 @@ var ui = {
 			ui.bugsLabel.innerHTML = "<b><i>Bugs</b></i>";
 		}
 
-		if (ui.bugsEntry.length === 0) {
+		for (var i = 0; i < ui.bugsEntry.length; i++) {
 			var li = document.createElement("li");
-
-			li.innerHTML = "This can't be right, try submitting some issues on <a href='https://github.com/ssjtroly/smb3-nes-web-randomizer/issues'>GitHub</a>.";
-
+			li.innerHTML = ui.bugsEntry[i];
 			ui.bugsList.appendChild(li);
-		} else {
-			for (var i = 0; i < ui.bugsEntry.length; i++) {
-				var li = document.createElement("li");
-
-				li.innerHTML = ui.bugsEntry[i];
-
-				ui.bugsList.appendChild(li);
-			}
 		}
+
+		var li = document.createElement("li");
+		li.innerHTML = "If you find any issues, report them on <a href='https://github.com/ssjtroly/smb3-nes-web-randomizer/issues'>GitHub</a>.";
+		ui.bugsList.appendChild(li);
 	},
 
 	// rom file

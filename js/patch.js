@@ -235,17 +235,14 @@ var patch = {
 			"c9", "2", // CMP #$02
 			"90", "1f", // BLT RockBreak_Rock
 
-<<<<<<< HEAD
 			//; Lock tiles
 			"cd", "54", "00", // CMP TILE_LOCKVERT ; compare directly to TILE_LOCKVERT
 			"f0", "0e", // BEQ RockBreak_LockVert
-=======
 			// ; Lock tiles
 			"20", "20", "b5", // JSR RockBreak_GetMapTileNearPlayer
 			"38", "e9", "54", // SUB #TILE_LOCKVERT ; offset to vertical lock
 			"c9", "0", // CMP #$00 ; is 0 when map tile is this lock
 			"f0", "16", // BEQ RockBreak_LockVert ; need to test lock directly because they are scattered around
->>>>>>> parent of 0890498... hack optimation and documentation
 
 			"20", "20", "b5", // JSR RockBreak_GetMapTileNearPlayer
 			"38", "e9", "56", // SUB #TILE_LOCKHORZ ; offset to horizontal lock
@@ -368,7 +365,9 @@ var patch = {
 	},
 
 	// this doesnt seem that useful without being able to set the world screen, blah
-	// i cant find where this info is actually applied so i can do another iteration
+	// ***** WARNING! THIS WILL OVERLAP WITH addWorldOrderArray *****
+	// not worrying about overlap for now because i have no plan to use addStartingXLocationCheck
+	// can probably just move this somewhere else if it ever becomes useful
 	addStartingXLocationCheck: {
 		// found in PRG011.asm, PRG011_A23E
 		"16257": [
@@ -433,12 +432,89 @@ var patch = {
 		],
 
 		// found in PRG030.asm, added to end of ROM bank at offset $3DFC6
-		// this adds 0x8 bytes, 0x42 bytes remaining in this bank 
+		// this adds 8 bytes, 66 bytes remaining in this bank 
 		"3dfc6": [
 			// Map_X_Starts:
 			// ; Map X start positions, World 1-8
 			"40", "20", "20", "20", "20", "20", "20", "20" // .byte $20, $20, $20, $20, $20, $20, $20, $20
 		],	
+	},
+
+	// ***** WARNING! THIS WILL OVERLAP WITH addStartingXLocationCheck *****
+	// not worrying about overlap for now because i have no plan to use addStartingXLocationCheck
+	addWorldOrderArray: {
+		// in smb3.asm
+		// replace...
+		//		.ds 1	; $072A unused
+		// with...
+		// 		World_Num_Index:	.ds 1	; $072A is now used as Index to the world number
+
+		// found in PRG024.asm, PRG024_ACA5
+		"30cc2": [
+			// replaces...
+			//		LDA #$00
+			//		STA World_Num
+			// with...
+			"20", "bd", "9f", // JSR Set_Init_World
+			"ea", "ea" // NOP (*2)
+		],
+
+		// found in PRG024.asm, PRG024_AD69
+		"30d85": [
+			// replaces...
+			//		;LDA World_Num_Debug
+			//		;STA World_Num	 	; Transfer the selected world to the game's world variable
+			// with...
+			"20", "c9", "9f", // JSR Set_Init_World_Debug
+			"ea", "ea", "ea" // NOP (*3)
+		],
+
+		// found in PRG030.asm, PRG030_9080
+		"3d0a1": [
+			// replaces...
+			//		INC World_Num	 ; Go to next world!
+			// with...
+			"20", "da", "9f" // JSR Set_Next_World
+		],
+
+		// found in PRG030.asm, added to end of ROM bank at offset $3FDC6
+		// using 57 bytes, 17 remaining free bytes starting at $3FDFF
+		"3dfc6": [
+			// World_Nums:
+			"0", "1", "2", "3", "4", "5", "6", // .byte $00, $01, $02, $03, $04, $05, $06
+
+			// Set_Init_World:
+			"a2", "0", // LDX #$00
+			"8e", "2a", "7", // STX World_Num_Index
+			"bd", "b6", "9f", // LDA World_Nums,X
+			"8d", "27", "7", // STA World_Num
+			"60", // RTS
+
+			// Set_Init_World_Debug:
+			"ae", "c8", "3", // LDX World_Num_Debug
+			"e0", "7", // CPX #$07
+			"f0", "19", // BEQ Set_World_8
+
+			"8e", "2a", "7", // LDX World_Num_Debug
+			"bd", "b6", "9f", // CPX #$07
+			"8d", "27", "7", // BEQ Set_World_8
+			"60", // RTS
+
+			// Set_Next_World:
+			"ae", "2a", "7", // LDX World_Num_Index
+			"e0", "6", // CPX #$06
+			"f0", "8", // BEQ Set_World_8
+
+			"e8", // INX ; Go to next world!
+			"bd", "b6", "9f", // LDA World_Nums,X
+			"8d", "27", "7", // STA World_Num
+			"60", // RTS
+
+			// Set_World_8:
+			"a9", "7", // LDA #$07
+			"8d", "27", "7", // STA World_Num
+			"60" // RTS
+		]
 	},
 
 	// rearrange some levels to make them completable with frog suit
