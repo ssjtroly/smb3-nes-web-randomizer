@@ -253,12 +253,20 @@ var ui = {
 			ui.bugsLabel.innerHTML = "<b><i>Bugs</b></i>";
 		}
 
-		for (var i = 0; i < ui.bugsEntry.length; i++) {
+		if (ui.bugsEntry.length === 0) {
 			var li = document.createElement("li");
 
-			li.innerHTML = ui.bugsEntry[i];
+			li.innerHTML = "This can't be right, try submitting some issues on <a href='https://github.com/ssjtroly/smb3-nes-web-randomizer/issues'>GitHub</a>.";
 
-  			ui.bugsList.appendChild(li);
+			ui.bugsList.appendChild(li);
+		} else {
+			for (var i = 0; i < ui.bugsEntry.length; i++) {
+				var li = document.createElement("li");
+
+				li.innerHTML = ui.bugsEntry[i];
+
+				ui.bugsList.appendChild(li);
+			}
 		}
 	},
 
