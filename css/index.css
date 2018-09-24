@@ -111,7 +111,7 @@ input[type=text] {
     opacity:0;
     transition: 0.5s;
     transition-property: opacity;
-    transition-delay: 0.5s;
+    transition-delay: 2.0s;
 
     position: absolute;
     z-index: 1;
