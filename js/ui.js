@@ -10,6 +10,7 @@ var ui = {
 	],
 
 	changelogEntry: [
+		{ date: new Date("2018-9-25"), text: "Implemented warp zone shuffling." },
 		{ date: new Date("2018-9-24"), text: "Implemented fortress shuffling." },
 		{ date: new Date("2018-9-24"), text: "Implemented world order shuffling." },
 		{ date: new Date("2018-9-24"), text: "Implemented castle shuffling." },
