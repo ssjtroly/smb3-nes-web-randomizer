@@ -382,11 +382,32 @@ var rom = {
 		0x37722 // bonus
 	],
 
+	// to change the world the pipes warp you to, set the world number to the bottom 4 bits
 	warpZonePointer: [
 		0x19C51, 0x19C52, 0x19C53, // entrances to worlds 2, 3, and 4
 		0x19C55, 0x19C56, 0x19C57, // entrances to worlds 5, 6, and 7
-						  0x19C5A, // entrance to world 8
+						  0x19C59, // entrance to world 8
 	],
+	// position where to land in warp world based on the world the player came from
+	warpZoneLandingY: [
+		0x50, 0x70, 0x70,
+		0x70, 0x70, 0x70,
+		0x90, 0x90, 0x90
+	],
+	warpZoneLandingX: [
+		0x40, 0x40, 0x40,
+		0x40, 0x40, 0x40,
+		0x80, 0x80, 0x80
+	],
+	warpZoneLandingYPointer: 0x1630A, // 1 byte per world (including warp world)
+	warpZoneLandingXPointer: 0x1631C, // 1 byte per world (including warp world)
+
+
+	// 28 bytes, 4 bytes for each world number
+	// y position, sprite, palette (?), x position
+	warpZoneNumberSpritePointer: 0x15194,
+	// uses the mario coin for the world 1 number since there is no sprite for the number 1
+	warpZoneNumberSprite: [ 0x63, 0x91, 0x93, 0x95, 0x97, 0x99, 0x9B, 0x9D ],
 
 	mapTilePointer: [
 		0x185BA, // world 1
@@ -2584,10 +2605,10 @@ var rom = {
 		"T": 195,
 		"U": 196,
 		"V": 197,
-		"W": 197,
-		"X": 198,
-		"Y": 199,
-		"Z": 200,
+		"W": 198,
+		"X": 199,
+		"Y": 200,
+		"Z": 201,
 		"a": 208,
 		"b": 209,
 		"c": 210,
