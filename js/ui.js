@@ -1437,5 +1437,48 @@ var ui = {
 
 		// set some initial values
 		ui.initialzeValues();
+
+		// change elements styles to be more mobile friendly
+		if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+			var pageTitle = document.getElementById("page-title");
+			pageTitle.style.fontSize = "22px";
+
+			var pageSubtitle = document.getElementById("page-subtitle");
+			pageSubtitle.style.fontSize = "20px";
+
+			var romHashTableTitle = document.getElementById("rom-hash-table-title");
+			romHashTableTitle.style.fontSize = "18px";
+
+			var romHashTable = document.getElementById("rom-hash-table");
+			romHashTable.style.fontSize = "18px";
+
+			//var body = document.getElementsByTagName("body")[0];
+			document.body.style.fontSize = "24px";
+
+			for (var i = 0; i < ui.tabButtons.length; i++) {
+				ui.tabButtons[i].style.height = "50px";
+				ui.tabButtons[i].style.width = "120px";
+				ui.tabButtons[i].style.fontSize = "24px";
+			}
+
+			var inputElements = document.getElementsByTagName("input");
+			for (var i = 0; i < inputElements.length; i++) {
+				if (inputElements[i].type == "checkbox") {
+					inputElements[i].style.width = "40px";
+					inputElements[i].style.height = "40px";
+					inputElements[i].style.verticalAlign = "middle";
+				} else {
+					inputElements[i].style.height = "40px";
+				}
+			}
+
+			var selectElements = document.getElementsByTagName("select");
+			for (var i = 0; i < selectElements.length; i++) {
+				selectElements[i].style.height = "40px";
+			}
+
+			var credits = document.getElementById("credits");
+			credits.style.fontSize = "16px";
+		}
 	},
 };
