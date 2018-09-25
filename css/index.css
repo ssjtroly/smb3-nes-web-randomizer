@@ -7,6 +7,10 @@ input[type=text] {
     width: 100%;
 }
 
+input[type=checkbox] {
+    -moz-appearance: checkbox;
+}
+
 .unimplemented {
     display: inline;
 }
@@ -30,7 +34,11 @@ input[type=text] {
     display: inline;
 }
 
-.rom-hash-table {
+#rom-hash-table-title {
+    display: inline;
+}
+
+#rom-hash-table {
     width: 100%;
 }
 

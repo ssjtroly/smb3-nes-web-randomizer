@@ -28,8 +28,8 @@ var ui = {
 		{ date: new Date("2018-9-5"), text: "Stole independent Koopaling HP hack." },
 		{ date: new Date("2018-8-29"), text: "Implemented regular stage shuffle." },
 		{ date: new Date("2018-8-28"), text: "Implemented enemy randomizer, but needs improvment. There are still a few incompatibilities that can occur and logical placement needs to be done." },
-		//{ date: new Date("2018-8-26"), text: "Added text editors for letters from Peach/Bowser at beginning of worlds" },
-		//{ date: new Date("2018-8-25"), text: "Added text editors for Toad houses" },
+		//{ date: new Date("2018-?-?"), text: "Added text editors for letters from Peach/Bowser at beginning of worlds" },
+		//{ date: new Date("2018-?-?"), text: "Added text editors for Toad houses" },
 		{ date: new Date("2018-8-24"), text: "Started this project." },
 	],
 

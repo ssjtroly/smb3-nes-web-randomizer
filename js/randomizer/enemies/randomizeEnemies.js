@@ -1,4 +1,3 @@
-
 function getVerticalPage(y) {
 	if (y < 0x02) {
 		return -1;
