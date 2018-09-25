@@ -1440,45 +1440,58 @@ var ui = {
 
 		// change elements styles to be more mobile friendly
 		if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+			var smallText = "14px";
+			var largeText = "18px";
+			var inputHeight = "30px";
+
+			ui.headerCanvas.style.width = "64px";
+			ui.headerCanvas.style.height = "64px";
+
 			var pageTitle = document.getElementById("page-title");
-			pageTitle.style.fontSize = "22px";
+			pageTitle.style.fontSize = largeText;
 
 			var pageSubtitle = document.getElementById("page-subtitle");
-			pageSubtitle.style.fontSize = "20px";
+			pageSubtitle.style.fontSize = smallText;
 
 			var romHashTableTitle = document.getElementById("rom-hash-table-title");
-			romHashTableTitle.style.fontSize = "18px";
+			romHashTableTitle.style.fontSize = smallText;
 
 			var romHashTable = document.getElementById("rom-hash-table");
-			romHashTable.style.fontSize = "18px";
+			romHashTable.style.fontSize = smallText;
 
-			//var body = document.getElementsByTagName("body")[0];
-			document.body.style.fontSize = "24px";
+			var listItemElements = document.getElementsByTagName("li");
+			for (var i = 0; i < listItemElements.length; i++) {
+				listItemElements[i].style.fontSize = smallText;
+			}
+
+			document.body.style.fontSize = largeText;
 
 			for (var i = 0; i < ui.tabButtons.length; i++) {
-				ui.tabButtons[i].style.height = "50px";
-				ui.tabButtons[i].style.width = "120px";
-				ui.tabButtons[i].style.fontSize = "24px";
+				ui.tabButtons[i].style.height = inputHeight;
+				ui.tabButtons[i].style.fontSize = largeText;
 			}
 
 			var inputElements = document.getElementsByTagName("input");
 			for (var i = 0; i < inputElements.length; i++) {
 				if (inputElements[i].type == "checkbox") {
-					inputElements[i].style.width = "40px";
-					inputElements[i].style.height = "40px";
+					inputElements[i].style.width = inputHeight;
+					inputElements[i].style.height = inputHeight;
 					inputElements[i].style.verticalAlign = "middle";
+				} else if (inputElements[i].type == "button") {
+					inputElements[i].style.width = "100%";
+					inputElements[i].style.height = inputHeight;
 				} else {
-					inputElements[i].style.height = "40px";
+					inputElements[i].style.height = inputHeight;
 				}
 			}
 
 			var selectElements = document.getElementsByTagName("select");
 			for (var i = 0; i < selectElements.length; i++) {
-				selectElements[i].style.height = "40px";
+				selectElements[i].style.height = inputHeight;
 			}
 
 			var credits = document.getElementById("credits");
-			credits.style.fontSize = "16px";
+			credits.style.fontSize = smallText;
 		}
 	},
 };
