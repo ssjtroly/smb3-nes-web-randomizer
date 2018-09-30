@@ -34,7 +34,7 @@ var ui = {
 	],
 
 	bugsEntry: [
-		"The cloud powerup still doesnt work with with permanent powerup (patch.allowCloudOnPermanentPowerup is broken)"	
+		"The cloud powerup still doesnt work with permanent powerup (patch.allowCloudOnPermanentPowerup is broken)"	
 	],
 
 	todoEntry: [
