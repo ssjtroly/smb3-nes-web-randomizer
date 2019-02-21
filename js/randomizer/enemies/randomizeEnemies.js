@@ -152,7 +152,7 @@ function randomizeEnemies(ROM) {
 	var includedTypes = 
 		EnemyType.Enemy | 
 		EnemyType.Piranha  | 
-		EnemyType.Platform | 
+		//EnemyType.Platform | 
 		EnemyType.Spawner | 
 		EnemyType.Event | 
 		EnemyType.Special | 
