@@ -13,6 +13,11 @@ function randomizeItemBlocks(ROM) {
 				continue;
 			}
 
+			// skip 7-7 since all item blocks contain stars needed to beat the level
+			if (i === 6 && levels[j].name === "7 Interior") {
+				continue;
+			}
+
 			ui.addSpoiler("&#9;&#9;" + levels[j].name);
 			var levelData = new LevelData(ROM, i, j);
 			var wroteLevelSpoiler = false;

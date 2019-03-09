@@ -1,6 +1,5 @@
 body {
-    max-width: 100%;
-    overflow-x: hidden;
+    width: calc(100% - 20px);
 }
 
 input[type=text] {

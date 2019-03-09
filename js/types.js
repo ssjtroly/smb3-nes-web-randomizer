@@ -91,6 +91,8 @@ var LevelObject = function(ROM, bank, id, x, y, width, pointer, is4Byte) {
 	this.y = y;
 	this.id = id;
 	this.x = x;
+
+	this.is4Byte = is4Byte;
 	this.width = width
 }
 

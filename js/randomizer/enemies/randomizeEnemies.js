@@ -152,8 +152,16 @@ function randomizeEnemies(ROM) {
 	var includedTypes = 
 		EnemyType.Enemy | 
 		EnemyType.Piranha  | 
+
+		// didnt mean to keep this after messing around
 		//EnemyType.Platform | 
-		EnemyType.Spawner | 
+
+		// exclude enemy spawners
+		// this was kind of broken anyways since some enemies would spawn inside the spawner tile and be stuck
+		// also could relieve some potential difficulty with the jump in 8-1 that expects a red turtle between bullet bills
+		// the bullet bills will now spawn again meaning enemies like discs wont spawn but there still may not be a red turtle
+		//EnemyType.Spawner | 
+
 		EnemyType.Event | 
 		EnemyType.Special | 
 		EnemyType.Unique | 
