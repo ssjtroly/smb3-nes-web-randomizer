@@ -34,7 +34,11 @@ var ui = {
 	],
 
 	bugsEntry: [
-		"The cloud powerup still doesnt work with permanent powerup (patch.allowCloudOnPermanentPowerup is broken)"	
+		"Enemies or powerups needed to complete a level may not be available in the level preventing all progress (e.g. a leaf powerup to fly to the warp pipe in a fortress or a turtle shell needed to break bricks may not be present).",
+		"There is a chance warp pipes can take you to an incorrect location causing you to fall to your death or be trapped inside a wall.",
+		"The cloud powerup still doesnt work with permanent powerup (patch.allowCloudOnPermanentPowerup is broken).",
+		"Breaking a fortress lock with a hammer may not place the correct path (patch.allowHammerToBreakLocks is broken),",
+		"There can be enemy placements that make levels incredilely hard or entirely impossible."
 	],
 
 	todoEntry: [
